@@ -1,0 +1,442 @@
+@font-face {
+  font-family: "CRM";
+  src: url("https://raw.githubusercontent.com/mendents/fonts/main/ClashGrotesk-Medium.ttf");
+}
+@font-face {
+  font-family: "CRR";
+  src: url("https://raw.githubusercontent.com/mendents/fonts/main/ClashGrotesk-Regular.ttf");
+}
+@font-face {
+  font-family: "CRB";
+  src: url("https://raw.githubusercontent.com/mendents/fonts/main/ClashGrotesk-Bold.ttf");
+}
+@font-face {
+  font-family: "CRSB";
+  src: url("https://raw.githubusercontent.com/mendents/fonts/main/ClashGrotesk-Semibold.ttf");
+}
+@font-face {
+  font-family: "CRL";
+  src: url("https://raw.githubusercontent.com/mendents/fonts/main/ClashGrotesk-Light.ttf");
+}
+@font-face {
+  font-family: "CREL";
+  src: url("https://raw.githubusercontent.com/mendents/fonts/main/ClashGrotesk-Extralight.ttf");
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "CRM", sans-serif;
+  color: black;
+}
+
+body {
+  position: relative;
+  overflow: hidden;
+}
+
+.auth-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #f5f5f5;
+}
+
+.auth-form {
+  background: white;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  max-width: 400px;
+  width: 100%;
+  text-align: center;
+}
+
+h2 {
+  margin-bottom: 0.5rem;
+  font-size: 24px;
+  color: #333;
+}
+
+p {
+  color: #666;
+  font-size: 14px;
+  margin-bottom: 1.5rem;
+}
+
+.input-container {
+  margin-bottom: 1rem;
+}
+
+input {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+input:focus {
+  outline: none;
+  border-color: #007bff;
+}
+
+.auth-btn, .signup-btn {
+  width: 100%;
+  padding: 0.75rem;
+  font-size: 14px;
+  color: white;
+  background-color: #007bff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 1rem;
+  transition: background-color 0.3s ease;
+}
+
+.auth-btn:hover, .signup-btn:hover {
+  background-color: #0056b3;
+}
+
+.error-text {
+  color: red;
+  font-size: 14px;
+  margin-bottom: 1rem;
+}
+
+.SideImg {
+  width: 60vw;
+  height: 100vh;
+  position: absolute;
+  left: 40%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5));
+  background-position: right;
+  background-repeat: no-repeat;
+  background-size: 200%;
+}
+
+.LoginBox, .SignupBox {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding: 3%;
+  justify-content: center;
+  position: absolute;
+  width: 40%;
+  transition: all 1s;
+}
+
+.SignupBox {
+  left: 0; /* Make sure it's within the viewport */
+}
+
+.LoginTxt, .SignupTxt {
+  font-size: 40px;
+}
+
+.SignUp, .Login {
+  margin-top: 12px;
+  font-size: 20px;
+  font-weight: 400;
+  font-family: "CRR";
+}
+
+.InputFeild {
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: 64px;
+  position: relative;
+  gap: 4%;
+}
+
+.EmailBox, .PasswordBox {
+  display: flex;
+  flex-direction: column;
+  font-size: 20px;
+  font-weight: 500;
+  height: 120px;
+  width: 200px;
+}
+
+.PasswordInput0, .EmailInput {
+  margin-top: 10px;
+  padding-left: 8%;
+  width: 100%;
+  height: 50px;
+  border: 2px solid #dddddd;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.05);
+  border-radius: 8px;
+}
+
+.LoginBtn, .SignupBtn {
+  width: 450px;
+  height: 60px;
+  background: blue;
+  border-radius: 8px;
+  font-weight: 500;
+  font-size: 20px;
+  color: white;
+  font-family: "CRM";
+  margin-top: 36px;
+  border: 0;
+}
+
+.LoginPage {
+  display: flex;
+  height: 100vh;
+  background-color: #f5f5f5;
+}
+
+.LoginBox {
+  width: 40%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 2rem;
+  background-color: white;
+}
+
+.LoginTxt {
+  font-size: 32px;
+  margin-bottom: 10px;
+}
+
+.SignUp {
+  font-size: 14px;
+  margin-bottom: 20px;
+}
+
+.SignupLink {
+  color: blue;
+  cursor: pointer;
+}
+
+.InputFeild {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.EmailBox, .PasswordBox {
+  display: flex;
+  flex-direction: column;
+  width: 50%;
+}
+
+.EmailInput, .PasswordInput0 {
+  padding: 10px;
+  font-size: 14px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+}
+
+.forgot {
+  font-size: 12px;
+  color: blue;
+  text-align: right;
+  cursor: pointer;
+}
+
+.LoginBtn {
+  background-color: blue;
+  color: white;
+  padding: 10px 0;
+  border-radius: 5px;
+  font-size: 16px;
+  border: none;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.GoogleBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: white;
+  border: 1px solid #ddd;
+  padding: 10px 0;
+  margin-top: 20px;
+  font-size: 16px;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.GoogleImg {
+  height: 20px;
+  margin-right: 10px;
+}
+
+.SideImg {
+  width: 60%;
+  background-color: #7a7a7a;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.BrandName {
+  font-size: 48px;
+  color: white;
+}
+
+.SignupPage {
+  display: flex;
+  height: 100vh;
+  background-color: #f5f5f5;
+}
+
+.SignupBox {
+  width: 40%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 2rem;
+  background-color: white;
+}
+
+.SignupTxt {
+  font-size: 32px;
+  margin-bottom: 10px;
+}
+
+.Login {
+  font-size: 14px;
+  margin-bottom: 20px;
+}
+
+.LoginLink {
+  color: blue;
+  cursor: pointer;
+}
+
+.InputFeild {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.NameBox, .EmailBox, .PasswordBox {
+  display: flex;
+  flex-direction: column;
+  width: 50%;
+}
+
+.NameInput, .EmailInput, .PasswordInput0 {
+  padding: 10px;
+  font-size: 14px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+}
+
+.SignupBtn {
+  background-color: blue;
+  color: white;
+  padding: 10px 0;
+  border-radius: 5px;
+  font-size: 16px;
+  border: none;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.GoogleBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: white;
+  border: 1px solid #ddd;
+  padding: 10px 0;
+  margin-top: 20px;
+  font-size: 16px;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.GoogleImg {
+  height: 20px;
+  margin-right: 10px;
+}
+
+.SideImg {
+  width: 60%;
+  background-color: #7a7a7a;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.BrandName {
+  font-size: 48px;
+  color: white;
+}
+
+
+/* Signup page styling */
+.SignupPage {
+  display: flex;
+  height: 100vh;
+  background-color: #f5f5f5;
+}
+
+.SignupBox {
+  width: 40%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 2rem;
+  background-color: white;
+}
+
+.SignupTxt {
+  font-size: 32px;
+  margin-bottom: 10px;
+}
+
+.InputFeild {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.EmailBox, .PasswordBox {
+  display: flex;
+  flex-direction: column;
+}
+
+.EmailInput, .PasswordInput0 {
+  padding: 10px;
+  font-size: 14px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+}
+
+.SignupBtn {
+  background-color: blue;
+  color: white;
+  padding: 10px 0;
+  border-radius: 5px;
+  font-size: 16px;
+  border: none;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.SideImg {
+  width: 60%;
+  background-color: #7a7a7a;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.BrandName {
+  font-size: 48px;
+  color: white;
+}
+

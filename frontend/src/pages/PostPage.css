@@ -1,0 +1,234 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "CRM", sans-serif;
+    text-decoration: none;
+    color: black;
+  }
+  @font-face {
+    font-family: "CRM";
+    src: url("https://raw.githubusercontent.com/mendents/fonts/main/ClashGrotesk-Medium.ttf");
+  }
+  @font-face {
+    font-family: "CRR";
+    src: url("https://raw.githubusercontent.com/mendents/fonts/main/ClashGrotesk-Regular.ttf");
+  }
+  
+  @font-face {
+    font-family: "CRB";
+    src: url("https://raw.githubusercontent.com/mendents/fonts/main/ClashGrotesk-Bold.ttf");
+  }
+  @font-face {
+    font-family: "CRSB";
+    src: url("https://raw.githubusercontent.com/mendents/fonts/main/ClashGrotesk-Semibold.ttf");
+  }
+  @font-face {
+    font-family: "CRL";
+    src: url("https://raw.githubusercontent.com/mendents/fonts/main/ClashGrotesk-Light.ttf");
+  }
+  @font-face {
+    font-family: "CREL";
+    src: url("https://raw.githubusercontent.com/mendents/fonts/main/ClashGrotesk-Extralight.ttf");
+  }
+  /* Body {
+    display: flex;
+  } */
+  button {
+    cursor: pointer;
+  }
+  .loading {
+    position: fixed;
+    background-color: #0077eb;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  
+    z-index: 1;
+    overflow: hidden;
+  }
+  #loading-logo {
+    height: 50px;
+    filter: invert(1);
+  }
+  .PageBody {
+    width: 100%;
+    display: flex;
+  }
+  
+  .LeftSide {
+    width: 80%;
+    padding: 2% 5%;
+  }
+  .IdeaCont {
+    width: 100%;
+    border: 1px solid #dadada;
+    border-radius: 12px;
+    padding: 2%;
+  }
+  .IdeaTitle {
+    font-size: 32px;
+  }
+  
+  /* Author */
+  .AuthorInfo {
+    margin: 20px 0px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+  }
+  .AuthorPP {
+    height: 40px;
+    width: 40px;
+    border-radius: 100%;
+  }
+  
+  .AuthorName {
+    font-family: "CRL";
+    font-size: 20px;
+  }
+  .TotalViews {
+    font-family: "CRL";
+    font-size: 18px;
+    text-align: right;
+    opacity: 0.5;
+  }
+  
+  .SaveBtn,
+  .Comments,
+  .SendThought,
+  .Sparks,
+  #Delete {
+    width: 124px;
+    height: 48px;
+    border-radius: 12px;
+    border: none;
+    font-size: 16px;
+  }
+  .SaveBtn {
+    background: #f5f5f5;
+    margin-left: auto;
+  }
+  
+  /* Content */
+  .Content {
+    font-size: 24px;
+  
+    opacity: 0.8;
+  }
+  /* Idea Info */
+  hr {
+    border: 1px solid #dddddd;
+    margin: 20px 0px;
+  }
+  .IdeaInfo {
+    display: flex;
+    gap: 24px;
+    align-items: center;
+    justify-content: flex-end;
+  }
+  .PostDate {
+    font-size: 14px;
+    opacity: 0.5;
+    margin-right: auto;
+  }
+  
+  .Sparks {
+    background-color: #faf3e2;
+  }
+  
+  .Comments {
+    background: #f5fbff;
+  }
+  
+  #Delete {
+    background: #f9f9f9;
+    cursor: pointer;
+    visibility: hidden;
+  }
+  /* Share Your Thoughts */
+  .ShareThoughts {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    height: 80px;
+    gap: 14px;
+    padding: 8px 24px;
+    border: 1px solid #dddddd;
+    border-radius: 12px;
+    margin-top: 20px;
+  }
+  .CommentImg {
+    width: 38px;
+    height: 38px;
+    border-radius: 100%;
+  }
+  
+  .CommentInput {
+    width: 680px;
+    border: none;
+    outline: none;
+    background-color: transparent;
+    font-size: 14px;
+    border-bottom: 1px solid black;
+  }
+  
+  .SendThought {
+    background-color: #0077eb;
+    color: white;
+    font-family: "CRL";
+    margin-left: auto;
+    cursor: pointer;
+  }
+  .bi-send {
+    color: white;
+  }
+  .CommentsDec {
+    margin: 2% 0;
+    font-size: 28px;
+  }
+  .CommentSec {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+  }
+  .Comment {
+    width: 100%;
+    border: 1px solid #dadada;
+    padding: 2%;
+    border-radius: 12px;
+  }
+  .CommentHead {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .ProfInfo {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+  #CUimage {
+    height: 32px;
+    width: 32px;
+    border-radius: 50%;
+  }
+  #CmntDlt {
+    height: 30px;
+    width: 56px;
+    background-color: #faf3e2;
+    border-radius: 6px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: none;
+    cursor: not-allowed;
+  }
+  .CommentBody {
+    padding: 2% 3.5%;
+  }
+  
