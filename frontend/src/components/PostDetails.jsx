@@ -89,21 +89,6 @@ const PostDetails = ({ post, onSpark }) => {
           <span>Share</span>
         </button>
       </div>
-
-      {/* Render the list of comments */}
-      <div className="mt-6">
-        <h3 className="text-2xl font-semibold mb-4">Comments</h3>
-        <ul>
-          {comments.map((comment) => (
-            <li key={comment._id} className="border-t border-gray-200 py-4">
-              <p className="text-gray-700">{comment.content}</p>
-              <span className="text-gray-500 text-sm">
-                By {comment.author?.email || 'Unknown'}
-              </span>
-            </li>
-          ))}
-        </ul>
-      </div>
     </div>
   );
 };

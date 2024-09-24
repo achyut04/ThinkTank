@@ -40,6 +40,7 @@ const getPostById = async (req, res) => {
       .populate('author', 'email')  // Populate the author's email
       .populate({
         path: 'comments',
+        select: 'content dateOfComment',  // Explicitly select content and dateOfComment
         populate: {
           path: 'author',  // Populate the author of each comment
           select: 'email',  // Only select the email of the author
@@ -54,6 +55,7 @@ const getPostById = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
 
 // Update a post
 const updatePost = async (req, res) => {
