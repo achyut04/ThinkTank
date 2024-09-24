@@ -41,19 +41,24 @@ export const getPostById = async (id) => {
   }
 };
 
-export const addPost = async (post) => {
-  const response = await axios.post('/api/posts', post);
-  return response.data;
-};
-
-export const updatePost = async (postId, post) => {
-  const response = await axios.put(`/api/posts/${postId}`, post);
-  return response.data;
+export const updatePost = async (postId, postData) => {
+  try {
+    const response = await axios.put(`http://localhost:5000/api/posts/${postId}`, postData);
+    return response.data;
+  } catch (error) {
+    console.error('Error updating post:', error);
+    return null;
+  }
 };
 
 export const deletePost = async (postId) => {
-  const response = await axios.delete(`/api/posts/${postId}`);
-  return response.data;
+  try {
+    const response = await axios.delete(`http://localhost:5000/api/posts/${postId}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error deleting post:', error);
+    return null;
+  }
 };
 
 

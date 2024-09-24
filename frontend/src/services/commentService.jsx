@@ -1,97 +1,51 @@
-import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
-import PostDetails from '../components/PostDetails';
-import CommentBox from '../components/CommentBox';
-import { getPostById, addComment, sparkPost } from '../services/postService';
+import axios from 'axios';
+import Cookies from 'js-cookie';
 
-const PostPage = () => {
-  const { id } = useParams();  
-  const [post, setPost] = useState(null);
-  const token = localStorage.getItem('token');  
-
-  useEffect(() => {
-    const fetchPost = async () => {
-      const data = await getPostById(id);
-      if (data) {
-        setPost(data);
-      }
-    };
-
-    fetchPost();
-  }, [id]);
-
-  const handleCommentSubmit = async (comment) => {
-    if (!comment) return;
-
-    const commentData = {
-      author: post.author._id, 
-      content: comment,
-    };
-
-    const addedComment = await addComment(id, commentData, token);
-    if (addedComment) {
-    
-      const updatedPost = await getPostById(id);
-      if (updatedPost) {
-        setPost(updatedPost); 
-      }
-    }
-  };
-
-  const handleSpark = async () => {
-    const sparkedPost = await sparkPost(id, token);
-    if (sparkedPost) {
-    
-      const updatedPost = await getPostById(id);
-      if (updatedPost) {
-        setPost(updatedPost);
-      }
-    }
-  };
-
-  return (
-    <div className="container mx-auto p-6">
-      {post ? (
-        <>
-          <PostDetails post={post} onSpark={handleSpark} />
-          <div className="mt-6">
-            <h3 className="text-2xl font-semibold mb-4">Add a Comment</h3>
-            <CommentBox onSubmit={handleCommentSubmit} />
-          </div>
-
-          {/* Render the list of comments below the Add Comment box */}
-          <div className="mt-6">
-            <h3 className="text-2xl font-semibold mb-4">Comments</h3>
-            <ul>
-              {post.comments.map((comment) => {
-                // Check if `dateOfComment` exists before formatting
-                const formattedCommentDate = comment.dateOfComment
-                  ? new Date(comment.dateOfComment).toLocaleString('en-US', {
-                      year: 'numeric',
-                      month: 'long',
-                      day: 'numeric',
-                      hour: '2-digit',
-                      minute: '2-digit',
-                    })
-                  : 'Date not available';
-
-                return (
-                  <li key={comment._id} className="border-t border-gray-200 py-4">
-                    <p className="text-gray-700">{comment.content}</p>
-                    <span className="text-gray-500 text-sm">
-                      By {comment.author?.email || 'Unknown'} on {formattedCommentDate}
-                    </span>
-                  </li>
-                );
-              })}
-            </ul>
-          </div>
-        </>
-      ) : (
-        <p>Loading post...</p>
-      )}
-    </div>
-  );
+export const getCommentsByPostId = async (postId) => {
+  const response = await axios.get(`http://localhost:5000/api/posts/${postId}/comments`);
+  return response.data;
 };
 
-export default PostPage;
+export const addComment = async (postId, content) => {
+  const response = await axios.post(`http://localhost:5000/api/posts/${postId}/comments`, { content });
+  return response.data;
+};
+
+export const updateComment = async (postId, commentId, newContent) => {
+  try {
+    // Get the JWT token from cookies
+    const token = Cookies.get('jwt');  // Ensure JWT is available in cookies
+
+    const response = await axios.put(`http://localhost:5000/api/posts/${postId}/comment/${commentId}`, 
+    { content: newContent },  // Send the new content in the request body
+    {
+      withCredentials: true,  // Ensure cookies are sent with the request
+      headers: {
+        Authorization: `Bearer ${token}`,  // Pass the JWT token in the Authorization header
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error updating comment:', error);
+    return null;
+  }
+};
+
+
+export const deleteComment = async (postId, commentId) => {
+  try {
+    // Get the JWT token from cookies if needed (since you are using cookies for JWT)
+    const token = Cookies.get('jwt');  // Ensure the JWT is available in cookies
+
+    const response = await axios.delete(`http://localhost:5000/api/posts/${postId}/comment/${commentId}`, {
+      withCredentials: true,  // Ensure cookies are sent with the request
+      headers: {
+        Authorization: `Bearer ${token}`,  // Pass the JWT token in the Authorization header
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error deleting comment:', error);
+    return null;
+  }
+};

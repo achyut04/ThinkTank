@@ -37,24 +37,26 @@ const getAllPosts = async (req, res) => {
 const getPostById = async (req, res) => {
   try {
     const post = await Post.findById(req.params.id)
-      .populate('author', 'email')  // Populate the author's email
+      .populate('author', 'email')  // Populate the post author
       .populate({
         path: 'comments',
-        select: 'content dateOfComment',  // Explicitly select content and dateOfComment
         populate: {
-          path: 'author',  // Populate the author of each comment
-          select: 'email',  // Only select the email of the author
+          path: 'author',  // Ensure the author of each comment is populated
+          select: 'email _id',  // Only select necessary fields
         },
       });
 
     if (!post) {
       return res.status(404).json({ message: 'Post not found' });
     }
+
     res.json(post);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
+
+
 
 
 // Update a post
@@ -81,6 +83,7 @@ const updatePost = async (req, res) => {
 };
 
 // Delete a post
+// postController.js
 const deletePost = async (req, res) => {
   try {
     const post = await Post.findById(req.params.id);
@@ -89,12 +92,22 @@ const deletePost = async (req, res) => {
       return res.status(404).json({ message: 'Post not found' });
     }
 
-    await post.remove();
+    // Authorization: Check if the logged-in user is the author of the post
+    if (post.author.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ message: 'Unauthorized to delete this post' });
+    }
+
+    // Use findByIdAndDelete to remove the post
+    await Post.findByIdAndDelete(req.params.id);
+
     res.json({ message: 'Post removed successfully' });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
+
+
+
 
 // Spark (like) a post
 const sparkPost = async (req, res) => {
@@ -139,18 +152,21 @@ const commentOnPost = async (req, res) => {
   const { author, content } = req.body;
 
   try {
-    const comment = await Comment.create({ author, content });  // Ensure the 'author' is a valid User ObjectID
+    const comment = await Comment.create({ author, content });
     const post = await Post.findById(req.params.id);
 
     post.comments.push(comment._id);
     post.totalComments += 1;
 
     await post.save();
+    await comment.populate('author', 'email'); // Populate author for the frontend
+
     res.status(201).json(comment);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
+
 
 // Edit a comment
 const editComment = async (req, res) => {
@@ -163,6 +179,11 @@ const editComment = async (req, res) => {
       return res.status(404).json({ message: 'Comment not found' });
     }
 
+    // Only allow post author or comment author to edit
+    if (req.user._id.toString() !== comment.author.toString()) {
+      return res.status(403).json({ message: 'Unauthorized to edit this comment' });
+    }
+
     comment.content = content || comment.content;
     await comment.save();
 
@@ -172,7 +193,9 @@ const editComment = async (req, res) => {
   }
 };
 
+
 // Delete a comment
+// commentController.js
 const deleteComment = async (req, res) => {
   try {
     const post = await Post.findById(req.params.id);
@@ -182,17 +205,29 @@ const deleteComment = async (req, res) => {
       return res.status(404).json({ message: 'Comment not found' });
     }
 
-    post.comments = post.comments.filter((c) => c.toString() !== comment._id.toString());
-    post.totalComments -= 1;
+    // Authorization: Check if the logged-in user is the author of the comment or the post
+    if (
+      req.user._id.toString() !== comment.author.toString() &&
+      req.user._id.toString() !== post.author.toString()
+    ) {
+      return res.status(403).json({ message: 'Unauthorized to delete this comment' });
+    }
 
-    await comment.remove();
+    // Remove the comment from the post's comments array
+    post.comments = post.comments.filter((c) => c.toString() !== comment._id.toString());
+
+    // Use findByIdAndDelete to delete the comment
+    await Comment.findByIdAndDelete(req.params.commentId);
+
     await post.save();
 
-    res.json({ message: 'Comment removed successfully' });
+    res.json({ message: 'Comment deleted successfully' });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
+
+
 
 module.exports = {
   createPost,

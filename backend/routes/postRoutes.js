@@ -29,4 +29,5 @@ router.post('/:id/comment',protect, commentOnPost); // Comment on a post
 router.put('/:id/comment/:commentId',protect, editComment); // Edit a comment
 router.delete('/:id/comment/:commentId',protect, deleteComment); // Delete a comment
 
+
 module.exports = router;
