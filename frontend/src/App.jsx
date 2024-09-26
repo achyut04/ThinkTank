@@ -9,6 +9,7 @@ import Login from './components/Auth/Login';
 import Signup from './components/Auth/Register';
 import ProtectedRoute from './components/shared/ProtectedRoute';
 import { ChakraProvider } from '@chakra-ui/react'
+import CreatePost from './components/Posts/CreatePost';
 
 function Layout() {
   const location = useLocation();
@@ -44,6 +45,14 @@ function Layout() {
           element={
             <ProtectedRoute>
               <PostPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/create-post"
+          element={
+            <ProtectedRoute>
+              <CreatePost />
             </ProtectedRoute>
           }
         />

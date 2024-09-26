@@ -91,3 +91,16 @@ export const sparkPost = async (postId, token) => {
     return null;
   }
 };
+
+export const fetchFile = async (filename) => {
+  try {
+    console.log(`Fetching file from: /api/posts/files/${filename}`); // Debugging
+    const response = await axios.get(`http://localhost:5000/api/posts/files/${filename}`, {
+      responseType: 'blob', // Important for handling the file as a Blob
+    });
+    return URL.createObjectURL(new Blob([response.data]));
+  } catch (error) {
+    console.error('Error fetching the file:', error);
+    return null;
+  }
+};

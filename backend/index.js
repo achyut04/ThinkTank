@@ -8,6 +8,7 @@ const cookieParser = require('cookie-parser');
 const cors = require('cors');
 const jwt = require('jsonwebtoken');  // JWT for token management
 const { protect } = require('./middleware/authMiddleware');
+const path = require('path');
 
 dotenv.config();
 connectDB();
@@ -23,6 +24,8 @@ app.use(express.json());
 app.use(cookieParser());
 
 // Route for checking if the user is authenticated
+
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.get('/api/users/check-auth', protect, (req, res) => {
   if (req.user) {
     res.json({ isAuthenticated: true, userId: req.user._id });

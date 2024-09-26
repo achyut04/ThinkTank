@@ -1,13 +1,9 @@
 import React, { useState, useContext } from 'react';
-import CreatePostModal from '../Posts/CreatePostModal';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuthContext } from '../../contexts/AuthContext';
-import {SearchContext} from '../../contexts/searchContext';
-import {getAllPosts} from '../../services/postService';
-
+import { SearchContext } from '../../contexts/searchContext';
 
 const Navbar = () => {
-  const [isModalOpen, setModalOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const { logout } = useAuthContext();
   const navigate = useNavigate();
@@ -21,10 +17,6 @@ const Navbar = () => {
     setLocalSearchTerm(''); // Clear the input field
   };
 
-
-  const openModal = () => setModalOpen(true);
-  const closeModal = () => setModalOpen(false);
-
   const handleLogout = () => {
     logout();
     navigate('/login');
@@ -33,7 +25,7 @@ const Navbar = () => {
   return (
     <header className="bg-white shadow-md py-4">
       <div className="container mx-auto flex justify-between items-center">
-        <Link to="/Home">
+        <Link to="/home">
           <div className="text-3xl font-bold text-blue-500">
             <span>Think</span>
             <span className="text-blue-500">Tank</span>!
@@ -57,12 +49,13 @@ const Navbar = () => {
         </form>
 
         <div className="flex items-center space-x-4">
-          <button
+          {/* Updated Button to Navigate to the Create Post Page */}
+          <Link
+            to="/create-post"
             className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full"
-            onClick={openModal}
           >
             Share idea
-          </button>
+          </Link>
 
           <div className="relative">
             <img
@@ -85,11 +78,8 @@ const Navbar = () => {
           </div>
         </div>
       </div>
-
-      {isModalOpen && <CreatePostModal closeModal={closeModal} />}
     </header>
   );
 };
-
 
 export default Navbar;

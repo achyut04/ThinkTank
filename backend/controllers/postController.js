@@ -1,9 +1,25 @@
 const Post = require('../models/Post');
 const Comment = require('../models/Comment');
 const mongoose = require('mongoose');
+const multer = require('multer');
+const path = require('path');
 
+// Configure multer for file storage
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, 'uploads/'); // Directory where files will be saved
+  },
+  filename: function (req, file, cb) {
+    cb(null, Date.now() + path.extname(file.originalname)); // Unique file name
+  }
+});
+
+const upload = multer({ 
+  storage: storage,
+  limits: { fileSize: 10 * 1024 * 1024 } // Limit file size to 10MB
+});
 const createPost = async (req, res) => {
-  const { title, content, tags } = req.body;
+  const { title, content, tags, links } = req.body;
 
   // Ensure title and content are provided
   if (!title || !content) {
@@ -11,12 +27,21 @@ const createPost = async (req, res) => {
   }
 
   try {
-    // Automatically set the author from the authenticated user (req.user)
+    let files = [];
+    if (req.files) {
+      files = req.files.map(file => ({
+        fileName: file.originalname,
+        fileUrl: `/uploads/${file.filename}` // Adjust the URL based on your server setup
+      }));
+    }
+
     const post = await Post.create({
       title,
       content,
-      author: req.user._id,  // Use req.user._id from the token
+      author: req.user._id, // Use req.user._id from the token
       tags,
+      links: JSON.parse(links || '[]'), // Safe parsing of links
+      files: files
     });
 
     res.status(201).json(post);
@@ -24,15 +49,12 @@ const createPost = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
-// Get all posts
-// const getAllPosts = async (req, res) => {
-//   try {
-//     const posts = await Post.find().populate('author', 'email').populate('comments');
-//     res.json(posts);
-//   } catch (error) {
-//     res.status(500).json({ message: error.message });
-//   }
-// };
+
+
+
+// Export the multer upload middleware for use in your routes
+module.exports.upload = upload;
+
 
 
 // Get all posts with optional search by title
@@ -254,6 +276,22 @@ const deleteComment = async (req, res) => {
   }
 };
 
+const handleFiles = async (req, res) => {
+  try {
+    const filePath = path.join(__dirname, '../uploads', req.params.filename);
+    console.log(`Serving file from: ${filePath}`); // Debugging
+    res.sendFile(filePath, (err) => {
+      if (err) {
+        console.error('Error serving file:', err);
+        res.status(404).send('File not found');
+      }
+    });
+  } catch (error) {
+    console.error('Server error:', error);
+    res.status(500).send('Server error');
+  }
+};
+
 
 
 module.exports = {
@@ -267,4 +305,6 @@ module.exports = {
   commentOnPost,
   editComment,
   deleteComment,
+  upload,
+  handleFiles,
 };
