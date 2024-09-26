@@ -1,12 +1,13 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
-import Navbar from './components/Navbar';
+import Navbar from './components/shared/Navbar';
 import Home from './pages/Home';
 import PostPage from './pages/PostPage';
 import { AuthContextProvider, useAuthContext } from './contexts/AuthContext'; 
-import Login from './components/Login';
-import Signup from './components/Register';
-import ProtectedRoute from './components/ProtectedRoute';
+import { SearchProvider } from './contexts/searchContext';
+import Login from './components/Auth/Login';
+import Signup from './components/Auth/Register';
+import ProtectedRoute from './components/shared/ProtectedRoute';
 import { ChakraProvider } from '@chakra-ui/react'
 
 function Layout() {
@@ -56,7 +57,9 @@ function App() {
     <ChakraProvider>
       <Router>
         <AuthContextProvider>
-          <Layout />
+          <SearchProvider>
+            <Layout />
+          </SearchProvider>
         </AuthContextProvider>
       </Router>
     </ChakraProvider>

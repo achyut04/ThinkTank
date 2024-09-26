@@ -1,14 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Link } from 'react-router-dom';
 import { Box, Container, Heading, Text, SimpleGrid, VStack, useColorModeValue } from '@chakra-ui/react';
-import PostCard from '../components/PostCard';
-import Filters from '../components/Filters';
+import PostCard from '../components/Posts/PostCard';
+import Filters from '../components/Posts/Filters';
 import { getAllPosts } from '../services/postService';
+import { SearchContext } from '../contexts/searchContext';
 
 const Home = () => {
   const [posts, setPosts] = useState([]);
   const [filteredPosts, setFilteredPosts] = useState([]);
   const [selectedFilter, setSelectedFilter] = useState('Discover');
+  // const [searchedPosts, setSearchedPosts] = useState([]); 
+  const {searchTerm} = useContext(SearchContext);
 
   const bgColor = useColorModeValue('gray.50', 'gray.900');
   const textColor = useColorModeValue('gray.600', 'gray.200');
@@ -16,17 +19,23 @@ const Home = () => {
   useEffect(() => {
     const fetchPosts = async () => {
       const data = await getAllPosts();
-      console.log("Fetched posts:", data);
       if (Array.isArray(data)) {
         setPosts(data);
-        setFilteredPosts(data);
+        setFilteredPosts(data); 
       } else {
         console.error("Fetched data is not an array:", data);
       }
     };
-
     fetchPosts();
   }, []);
+
+  useEffect(() => {
+    if (searchTerm.length > 0) {
+      setFilteredPosts(posts.filter((post) => post.title.toLowerCase().includes(searchTerm.toLowerCase())));
+    } else {
+      setFilteredPosts(posts);
+    }
+  }, [searchTerm, posts]);
 
   const handleFilterChange = (category) => {
     setSelectedFilter(category);

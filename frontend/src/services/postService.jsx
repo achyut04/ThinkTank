@@ -19,7 +19,7 @@ export const createPost = async (postData) => {
 
 export const getAllPosts = async () => {
   try {
-    const response = await axios.get('http://localhost:5000/api/posts',{
+    const response = await axios.get('http://localhost:5000/api/posts/',{
       withCredentials: true,
     });
     console.log(response);

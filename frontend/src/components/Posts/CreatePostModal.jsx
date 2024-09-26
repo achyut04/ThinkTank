@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { createPost } from '../services/postService'; 
+import { createPost } from '../../services/postService'; 
 
 const CreatePostModal = ({ closeModal }) => {
   const [title, setTitle] = useState('');

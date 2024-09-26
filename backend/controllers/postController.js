@@ -25,14 +25,41 @@ const createPost = async (req, res) => {
   }
 };
 // Get all posts
+// const getAllPosts = async (req, res) => {
+//   try {
+//     const posts = await Post.find().populate('author', 'email').populate('comments');
+//     res.json(posts);
+//   } catch (error) {
+//     res.status(500).json({ message: error.message });
+//   }
+// };
+
+
+// Get all posts with optional search by title
 const getAllPosts = async (req, res) => {
   try {
-    const posts = await Post.find().populate('author', 'email').populate('comments');
+    const { search } = req.query;  // Get the search query parameter
+
+    // Create a filter object based on whether the search parameter is provided
+    let filter = {};
+    if (search) {
+      filter.title = { $regex: search, $options: 'i' };  // Case-insensitive search
+    }
+
+    // Fetch posts using the filter
+    const posts = await Post.find(filter)
+      .populate('author', 'email')
+      .populate('comments');
+
     res.json(posts);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
+
+
+
+
 
 const getPostById = async (req, res) => {
   try {

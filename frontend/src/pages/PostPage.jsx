@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import PostDetails from '../components/PostDetails';
-import CommentBox from '../components/CommentBox';
+import PostDetails from '../components/Posts/PostDetails';
+import CommentBox from '../components/comments/CommentBox';
 import { getPostById, addComment, sparkPost, updatePost, deletePost } from '../services/postService'; // Import `updatePost` and `deletePost`
 import { getCurrentUser } from '../services/authService';
 import { updateComment, deleteComment } from '../services/commentService';
@@ -138,7 +138,7 @@ const PostPage = () => {
         <>
           <PostDetails post={post} onSpark={handleSpark} />
 
-          {/* Add edit and delete buttons for post author */}
+          {/* Add edit and delete buttons for post author */} 
           {currentUser === post.author._id && (
             <div className="flex space-x-4 mt-6">
               <button className="text-blue-500 hover:underline" onClick={handleEditPost}>
@@ -214,3 +214,4 @@ const PostPage = () => {
 };
 
 export default PostPage;
+
