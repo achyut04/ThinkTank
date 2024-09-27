@@ -2,9 +2,8 @@ const User = require('../models/User');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
-// Register User
 const registerUser = async (req, res) => {
-  const { email, password, about } = req.body;
+  const { name, email, password, about } = req.body;
 
   try {
     const userExists = await User.findOne({ email });
@@ -14,16 +13,14 @@ const registerUser = async (req, res) => {
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    const user = await User.create({ email, password: hashedPassword, about });
+    const user = await User.create({ name, email, password: hashedPassword, about });
 
-    // Generate JWT token
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '30d' });
 
-    // Send the token in an HttpOnly cookie
     res.cookie('jwt', token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production', // Set to true if in production
-      maxAge: 30 * 24 * 60 * 60 * 1000 // 30 days
+      secure: process.env.NODE_ENV === 'production', 
+      maxAge: 30 * 24 * 60 * 60 * 1000 
     });
 
     res.status(201).json({ _id: user.id, email: user.email });
@@ -32,7 +29,6 @@ const registerUser = async (req, res) => {
   }
 };
 
-// Login User
 const loginUser = async (req, res) => {
   const { email, password } = req.body;
 
@@ -49,14 +45,12 @@ const loginUser = async (req, res) => {
       return res.status(400).json({ message: 'Invalid credentials' });
     }
 
-    // Generate JWT token
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '30d' });
 
-    // Send the token in an HttpOnly cookie
     res.cookie('jwt', token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production', // Set to true if in production
-      maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+      secure: process.env.NODE_ENV === 'production', 
+      maxAge: 30 * 24 * 60 * 60 * 1000, 
     });
 
     res.json({ _id: user.id, email: user.email });
@@ -65,14 +59,42 @@ const loginUser = async (req, res) => {
   }
 };
 
-// Get logged-in user's profile
+
 const getUserProfile = async (req, res) => {
-  res.json(req.user);
+  console.log('GET /api/users/profile request received.');
+  if (req.user) {
+    res.json({
+      isAuthenticated: true,
+      user: {
+        id: req.user._id,
+        email: req.user.email,
+        name: req.user.name,
+        about: req.user.about,
+      },
+    });
+  } else {
+    res.status(401).json({ isAuthenticated: false });
+  }
 };
 
-// Edit logged-in user's details
+
+
+const getUserById = async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id).select('-password'); 
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    res.json(user);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 const updateUserProfile = async (req, res) => {
-  const { email, password, about } = req.body;
+  const { password, about, name } = req.body;
 
   try {
     const user = await User.findById(req.user.id);
@@ -81,11 +103,9 @@ const updateUserProfile = async (req, res) => {
       return res.status(404).json({ message: 'User not found' });
     }
 
-    // Update user fields
-    user.email = email || user.email;
+    user.name = name || user.name;
     user.about = about || user.about;
 
-    // Hash the new password if it's provided
     if (password) {
       user.password = await bcrypt.hash(password, 10);
     }
@@ -97,7 +117,6 @@ const updateUserProfile = async (req, res) => {
   }
 };
 
-// Delete logged-in user
 const deleteUserProfile = async (req, res) => {
   try {
     const user = await User.findById(req.user.id);
@@ -106,13 +125,17 @@ const deleteUserProfile = async (req, res) => {
       return res.status(404).json({ message: 'User not found' });
     }
 
-    await user.remove();
-    res.clearCookie('jwt'); // Clear the authentication cookie
+    console.log(`Deleting user: ${user._id}, Email: ${user.email}`); 
+
+    await User.findByIdAndDelete(req.user.id);
+    res.clearCookie('jwt');
     res.json({ message: 'User deleted successfully' });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error('Error deleting user profile:', error.message); 
+    res.status(500).json({ message: 'Server error during deletion' });
   }
 };
+
 
 module.exports = {
   registerUser,
@@ -120,4 +143,5 @@ module.exports = {
   getUserProfile,
   updateUserProfile,
   deleteUserProfile,
+  getUserById,
 };

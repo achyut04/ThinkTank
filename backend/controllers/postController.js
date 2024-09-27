@@ -4,24 +4,22 @@ const mongoose = require('mongoose');
 const multer = require('multer');
 const path = require('path');
 
-// Configure multer for file storage
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, 'uploads/'); // Directory where files will be saved
+    cb(null, 'uploads/');
   },
   filename: function (req, file, cb) {
-    cb(null, Date.now() + path.extname(file.originalname)); // Unique file name
+    cb(null, Date.now() + path.extname(file.originalname));
   }
 });
 
 const upload = multer({ 
   storage: storage,
-  limits: { fileSize: 10 * 1024 * 1024 } // Limit file size to 10MB
+  limits: { fileSize: 10 * 1024 * 1024 }
 });
 const createPost = async (req, res) => {
   const { title, content, tags, links } = req.body;
 
-  // Ensure title and content are provided
   if (!title || !content) {
     return res.status(400).json({ message: 'Title and content are required.' });
   }
@@ -31,16 +29,16 @@ const createPost = async (req, res) => {
     if (req.files) {
       files = req.files.map(file => ({
         fileName: file.originalname,
-        fileUrl: `/uploads/${file.filename}` // Adjust the URL based on your server setup
+        fileUrl: `/uploads/${file.filename}`
       }));
     }
 
     const post = await Post.create({
       title,
       content,
-      author: req.user._id, // Use req.user._id from the token
+      author: req.user._id, 
       tags,
-      links: JSON.parse(links || '[]'), // Safe parsing of links
+      links: JSON.parse(links || '[]'), 
       files: files
     });
 
@@ -52,23 +50,15 @@ const createPost = async (req, res) => {
 
 
 
-// Export the multer upload middleware for use in your routes
-module.exports.upload = upload;
-
-
-
-// Get all posts with optional search by title
 const getAllPosts = async (req, res) => {
   try {
-    const { search } = req.query;  // Get the search query parameter
+    const { search } = req.query; 
 
-    // Create a filter object based on whether the search parameter is provided
     let filter = {};
     if (search) {
-      filter.title = { $regex: search, $options: 'i' };  // Case-insensitive search
+      filter.title = { $regex: search, $options: 'i' }; 
     }
 
-    // Fetch posts using the filter
     const posts = await Post.find(filter)
       .populate('author', 'email')
       .populate('comments');
@@ -80,18 +70,15 @@ const getAllPosts = async (req, res) => {
 };
 
 
-
-
-
 const getPostById = async (req, res) => {
   try {
     const post = await Post.findById(req.params.id)
-      .populate('author', 'email')  // Populate the post author
+      .populate('author', 'email')
       .populate({
         path: 'comments',
         populate: {
-          path: 'author',  // Ensure the author of each comment is populated
-          select: 'email _id',  // Only select necessary fields
+          path: 'author', 
+          select: 'email _id',  
         },
       });
 
@@ -106,9 +93,6 @@ const getPostById = async (req, res) => {
 };
 
 
-
-
-// Update a post
 const updatePost = async (req, res) => {
   const { title, content, tags } = req.body;
 
@@ -119,7 +103,6 @@ const updatePost = async (req, res) => {
       return res.status(404).json({ message: 'Post not found' });
     }
 
-    // Update fields
     post.title = title || post.title;
     post.content = content || post.content;
     post.tags = tags || post.tags;
@@ -131,8 +114,6 @@ const updatePost = async (req, res) => {
   }
 };
 
-// Delete a post
-// postController.js
 const deletePost = async (req, res) => {
   try {
     const post = await Post.findById(req.params.id);
@@ -141,12 +122,10 @@ const deletePost = async (req, res) => {
       return res.status(404).json({ message: 'Post not found' });
     }
 
-    // Authorization: Check if the logged-in user is the author of the post
     if (post.author.toString() !== req.user._id.toString()) {
       return res.status(403).json({ message: 'Unauthorized to delete this post' });
     }
 
-    // Use findByIdAndDelete to remove the post
     await Post.findByIdAndDelete(req.params.id);
 
     res.json({ message: 'Post removed successfully' });
@@ -156,9 +135,6 @@ const deletePost = async (req, res) => {
 };
 
 
-
-
-// Spark (like) a post
 const sparkPost = async (req, res) => {
   try {
     const post = await Post.findById(req.params.id);
@@ -177,7 +153,6 @@ const sparkPost = async (req, res) => {
   }
 };
 
-// Remove spark (unlike) a post
 const removeSpark = async (req, res) => {
   try {
     const post = await Post.findById(req.params.id);
@@ -196,7 +171,7 @@ const removeSpark = async (req, res) => {
   }
 };
 
-// Comment on a post
+
 const commentOnPost = async (req, res) => {
   const { author, content } = req.body;
 
@@ -208,7 +183,7 @@ const commentOnPost = async (req, res) => {
     post.totalComments += 1;
 
     await post.save();
-    await comment.populate('author', 'email'); // Populate author for the frontend
+    await comment.populate('author', 'email');
 
     res.status(201).json(comment);
   } catch (error) {
@@ -217,7 +192,6 @@ const commentOnPost = async (req, res) => {
 };
 
 
-// Edit a comment
 const editComment = async (req, res) => {
   const { content } = req.body;
 
@@ -228,7 +202,6 @@ const editComment = async (req, res) => {
       return res.status(404).json({ message: 'Comment not found' });
     }
 
-    // Only allow post author or comment author to edit
     if (req.user._id.toString() !== comment.author.toString()) {
       return res.status(403).json({ message: 'Unauthorized to edit this comment' });
     }
@@ -243,8 +216,6 @@ const editComment = async (req, res) => {
 };
 
 
-// Delete a comment
-// commentController.js
 const deleteComment = async (req, res) => {
   try {
     const post = await Post.findById(req.params.id);
@@ -253,8 +224,6 @@ const deleteComment = async (req, res) => {
     if (!comment) {
       return res.status(404).json({ message: 'Comment not found' });
     }
-
-    // Authorization: Check if the logged-in user is the author of the comment or the post
     if (
       req.user._id.toString() !== comment.author.toString() &&
       req.user._id.toString() !== post.author.toString()
@@ -262,10 +231,8 @@ const deleteComment = async (req, res) => {
       return res.status(403).json({ message: 'Unauthorized to delete this comment' });
     }
 
-    // Remove the comment from the post's comments array
     post.comments = post.comments.filter((c) => c.toString() !== comment._id.toString());
 
-    // Use findByIdAndDelete to delete the comment
     await Comment.findByIdAndDelete(req.params.commentId);
 
     await post.save();
@@ -279,7 +246,7 @@ const deleteComment = async (req, res) => {
 const handleFiles = async (req, res) => {
   try {
     const filePath = path.join(__dirname, '../uploads', req.params.filename);
-    console.log(`Serving file from: ${filePath}`); // Debugging
+    console.log(`Serving file from: ${filePath}`); 
     res.sendFile(filePath, (err) => {
       if (err) {
         console.error('Error serving file:', err);

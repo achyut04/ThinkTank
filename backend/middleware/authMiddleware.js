@@ -1,19 +1,19 @@
-// middleware/authMiddleware.js
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 
 const protect = async (req, res, next) => {
   let token;
-  console.log('Cookies:', req.cookies); // Debug: Check incoming cookies
 
   if (req.cookies.jwt) {
     try {
       token = req.cookies.jwt;
-      console.log('JWT Token:', token); // Debug: Check token
+      console.log('Token found in cookies:', token); 
 
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      console.log('Decoded token:', decoded); 
+
       req.user = await User.findById(decoded.id).select('-password');
-      console.log('Authenticated user:', req.user); // Debug: Check authenticated user
+      console.log('User found in database:', req.user); 
 
       if (!req.user) {
         return res.status(401).json({ message: 'User not found' });
@@ -22,9 +22,10 @@ const protect = async (req, res, next) => {
       next();
     } catch (error) {
       console.error('Error in protect middleware:', error);
-      res.status(401).json({ message: 'Not authorized, token failed' });
+      return res.status(401).json({ message: 'Not authorized, token failed' });
     }
   } else {
+    console.log('No JWT token found in cookies'); 
     res.status(401).json({ message: 'Not authorized, no token' });
   }
 };

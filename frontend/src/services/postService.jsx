@@ -62,12 +62,11 @@ export const deletePost = async (postId) => {
 };
 
 
-// Add a comment to a post
 export const addComment = async (postId, commentData, token) => {
   try {
     const response = await axios.post(`http://localhost:5000/api/posts/${postId}/comment`, commentData, {
       headers: {
-        Authorization: `Bearer ${token}`,  // Pass the JWT token
+        Authorization: `Bearer ${token}`,
       },
     });
     return response.data;
@@ -77,12 +76,12 @@ export const addComment = async (postId, commentData, token) => {
   }
 };
 
-// Spark a post
+
 export const sparkPost = async (postId, token) => {
   try {
     const response = await axios.post(`http://localhost:5000/api/posts/${postId}/spark`, {}, {
       headers: {
-        Authorization: `Bearer ${token}`,  // Pass the JWT token
+        Authorization: `Bearer ${token}`, 
       },
     });
     return response.data;
@@ -94,9 +93,9 @@ export const sparkPost = async (postId, token) => {
 
 export const fetchFile = async (filename) => {
   try {
-    console.log(`Fetching file from: /api/posts/files/${filename}`); // Debugging
+    console.log(`Fetching file from: /api/posts/files/${filename}`); 
     const response = await axios.get(`http://localhost:5000/api/posts/files/${filename}`, {
-      responseType: 'blob', // Important for handling the file as a Blob
+      responseType: 'blob',
     });
     return URL.createObjectURL(new Blob([response.data]));
   } catch (error) {

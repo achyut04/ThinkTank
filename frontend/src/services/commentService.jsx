@@ -13,15 +13,13 @@ export const addComment = async (postId, content) => {
 
 export const updateComment = async (postId, commentId, newContent) => {
   try {
-    // Get the JWT token from cookies
-    const token = Cookies.get('jwt');  // Ensure JWT is available in cookies
-
+    const token = Cookies.get('jwt'); 
     const response = await axios.put(`http://localhost:5000/api/posts/${postId}/comment/${commentId}`, 
-    { content: newContent },  // Send the new content in the request body
+    { content: newContent }, 
     {
-      withCredentials: true,  // Ensure cookies are sent with the request
+      withCredentials: true, 
       headers: {
-        Authorization: `Bearer ${token}`,  // Pass the JWT token in the Authorization header
+        Authorization: `Bearer ${token}`, 
       },
     });
     return response.data;
@@ -34,13 +32,12 @@ export const updateComment = async (postId, commentId, newContent) => {
 
 export const deleteComment = async (postId, commentId) => {
   try {
-    // Get the JWT token from cookies if needed (since you are using cookies for JWT)
-    const token = Cookies.get('jwt');  // Ensure the JWT is available in cookies
+    const token = Cookies.get('jwt');
 
     const response = await axios.delete(`http://localhost:5000/api/posts/${postId}/comment/${commentId}`, {
-      withCredentials: true,  // Ensure cookies are sent with the request
+      withCredentials: true,
       headers: {
-        Authorization: `Bearer ${token}`,  // Pass the JWT token in the Authorization header
+        Authorization: `Bearer ${token}`,
       },
     });
     return response.data;

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useForm } from 'react-hook-form'; // Import useForm for managing form state
+import { useForm } from 'react-hook-form';
 import { createPost } from '../../services/postService';
 
 const CreatePost = () => {
@@ -16,7 +16,6 @@ const CreatePost = () => {
     formData.append('content', data.content);
     formData.append('tags', data.tags);
     
-    // Ensure links are sent in JSON string format
     const linksArray = data.links ? data.links.split(',').map(link => link.trim()) : [];
     formData.append('links', JSON.stringify(linksArray));
   
@@ -28,7 +27,7 @@ const CreatePost = () => {
       const response = await createPost(formData);
       console.log('Post created response:', response);
       if (response) {
-        reset(); // Reset form after submission
+        reset();
         window.location.href = '/home';
       }
     } catch (error) {
@@ -97,7 +96,7 @@ const CreatePost = () => {
             <button
               type="button"
               className="text-gray-500"
-              onClick={() => window.history.back()} // Navigate back to the previous page
+              onClick={() => window.history.back()}
             >
               Cancel
             </button>

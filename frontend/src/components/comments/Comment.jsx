@@ -1,6 +1,6 @@
-import React, { useState } from 'react';  // Import useState from React
+import React, { useState } from 'react'; 
 import { deleteComment, editComment, getPostById } from '../../services/postService';
-import moment from 'moment';  // For date formatting
+import moment from 'moment';
 
 const Comment = ({ comment, postId, loggedInUserId, token, setPost }) => {
   const [isEditing, setIsEditing] = useState(false);

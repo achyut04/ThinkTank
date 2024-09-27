@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import './AuthForm.css'; // Assuming this links the provided CSS
+import './AuthForm.css';
 
 const Register = () => {
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [about, setAbout] = useState('');
@@ -13,8 +14,8 @@ const Register = () => {
   const submitHandler = async (e) => {
     e.preventDefault();
     try {
-      await axios.post('http://localhost:5000/api/users/register', { email, password, about }, { withCredentials: true });
-      navigate('/login'); // Redirect to login after successful registration
+      await axios.post('http://localhost:5000/api/users/register', { name, email, password, about }, { withCredentials: true });
+      navigate('/login');
     } catch (error) {
       setError('Registration failed');
     }
@@ -31,6 +32,17 @@ const Register = () => {
         {error && <p className="error-text">{error}</p>}
         <form onSubmit={submitHandler}>
           <div className="InputFeild">
+            <div className="NameBox">
+              <label>Name</label>
+              <input
+                type="text"
+                placeholder="Enter your name"
+                className="NameInput"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                required
+              />
+            </div>
             <div className="EmailBox">
               <label>Email</label>
               <input
@@ -53,11 +65,11 @@ const Register = () => {
                 required
               />
             </div>
-            <div className="PasswordBox">
+            <div className="AboutBox">
               <label>About</label>
               <textarea
                 placeholder="Tell us about yourself"
-                className="PasswordInput0"
+                className="AboutInput"
                 value={about}
                 onChange={(e) => setAbout(e.target.value)}
                 required
@@ -69,11 +81,10 @@ const Register = () => {
         <button className="SignupBtn" onClick={redirectToLogin}>Already have an account? Login</button>
       </div>
       <div className="SideImg">
-        <h1 className="BrandName">ThinkTank</h1> {/* Replaced Mendent with ThinkTank */}
+        <h1 className="BrandName">ThinkTank</h1>
       </div>
     </div>
   );
 };
 
 export default Register;
-

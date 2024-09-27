@@ -10,7 +10,6 @@ const Home = () => {
   const [posts, setPosts] = useState([]);
   const [filteredPosts, setFilteredPosts] = useState([]);
   const [selectedFilter, setSelectedFilter] = useState('Discover');
-  // const [searchedPosts, setSearchedPosts] = useState([]); 
   const {searchTerm} = useContext(SearchContext);
 
   const bgColor = useColorModeValue('gray.50', 'gray.900');

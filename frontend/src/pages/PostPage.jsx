@@ -17,7 +17,7 @@ const PostPage = () => {
     const fetchUser = async () => {
       const user = await getCurrentUser();
       if (user && user.isAuthenticated) {
-        setCurrentUser(user.userId);
+        setCurrentUser(user.user.id);
       }
     };
     fetchUser();
@@ -36,19 +36,13 @@ const PostPage = () => {
   }, [id]);
 
   const handleFiles = async (file) => {
-    console.log('File clicked:', file);
-    
-  
     const baseUrl = 'http://localhost:5000'; 
     const fileUrl = `${baseUrl}${file.fileUrl}`; 
 
     if (fileUrl) {
-      console.log('File URL:', fileUrl); 
       window.open(fileUrl, '_blank');
     }
-};
-
-  
+  };
 
   const handleCommentSubmit = async (comment) => {
     if (!comment) return;
@@ -108,6 +102,36 @@ const PostPage = () => {
     }
   };
 
+  const handleEditComment = async (commentId, currentContent) => {
+    const newContent = prompt('Edit your comment:', currentContent);
+    if (!newContent) return;
+
+    const updatedComment = await updateComment(id, commentId, newContent);
+    if (updatedComment) {
+      const updatedPost = await getPostById(id);
+      if (updatedPost) {
+        setPost(updatedPost);
+      }
+    } else {
+      console.error('Failed to update comment');
+    }
+  };
+
+  const handleDeleteComment = async (commentId) => {
+    const confirmDelete = window.confirm('Are you sure you want to delete this comment?');
+    if (!confirmDelete) return;
+
+    const deletedComment = await deleteComment(id, commentId);
+    if (deletedComment) {
+      const updatedPost = await getPostById(id);
+      if (updatedPost) {
+        setPost(updatedPost);
+      }
+    } else {
+      console.error('Failed to delete comment');
+    }
+  };
+
   if (loading) {
     return <p>Loading...</p>;
   }
@@ -129,7 +153,6 @@ const PostPage = () => {
             </div>
           )}
 
-          {/* Display Links */}
           {post.links && post.links.length > 0 && (
             <div className="mt-6">
               <h3 className="text-2xl font-semibold mb-4">References</h3>
@@ -145,7 +168,6 @@ const PostPage = () => {
             </div>
           )}
 
-          {/* Display Files */}
           {post.files && post.files.length > 0 && (
             <div className="mt-6">
               <h3 className="text-2xl font-semibold mb-4">Files</h3>
@@ -153,7 +175,7 @@ const PostPage = () => {
                 {post.files.map((file, index) => (
                   <li key={index}>
                     <button
-                      onClick={() => handleFiles(file)} // Call handleFiles method
+                      onClick={() => handleFiles(file)}
                       className="text-blue-500 hover:underline"
                     >
                       {file.fileName}
@@ -169,7 +191,6 @@ const PostPage = () => {
             <CommentBox onSubmit={handleCommentSubmit} />
           </div>
 
-          {/* Render Comments */}
           <div className="mt-6">
             <h3 className="text-2xl font-semibold mb-4">Comments</h3>
             <ul>

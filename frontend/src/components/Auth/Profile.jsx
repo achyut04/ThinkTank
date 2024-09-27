@@ -1,62 +1,98 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { useAuthContext } from '../../contexts/AuthContext';
+import { getCurrentUser, updateUserProfile, deleteUserProfile } from '../../services/authService';
 
 const Profile = () => {
-  const [profile, setProfile] = useState({});
-  const [email, setEmail] = useState('');
+  const [userData, setUserData] = useState({});
+  const [name, setName] = useState('');
   const [about, setAbout] = useState('');
-  const [error, setError] = useState('');
+  const { logout } = useAuthContext();
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        const { data } = await axios.get('/api/users/profile', { withCredentials: true });
-        setProfile(data);
-        setEmail(data.email);
-        setAbout(data.about);
-      } catch (error) {
-        setError('Failed to load profile');
-        navigate('/login');
-      }
-    };
-
-    fetchProfile();
-  }, [navigate]);
-
-  const submitHandler = async (e) => {
-    e.preventDefault();
-
+  const getUserData = async () => {
     try {
-      await axios.put(
-        '/api/users/profile',
-        { email, about },
-        { withCredentials: true }
-      );
-      setError('');
-      alert('Profile updated successfully');
+      const user = await getCurrentUser();
+      if (!user || !user.user.id) {
+        throw new Error('User not authenticated');
+      }
+      setUserData(user.user);
+      setName(user.user.name);
+      setAbout(user.user.about);
     } catch (error) {
-      setError('Failed to update profile');
+      console.error('Error fetching user data:', error);
+      navigate('/login');
+    }
+  };
+  getUserData();
+}, [navigate]);
+
+
+  const handleUpdate = async () => {
+    try {
+      await updateUserProfile(name, about);
+      alert('Profile updated successfully!');
+    } catch (error) {
+      console.error('Error updating profile:', error);
     }
   };
 
+  const handleDelete = async () => {
+    try {
+      await deleteUserProfile();
+      logout();
+      navigate('/signup');
+    } catch (error) {
+      console.error('Error deleting account:', error);
+      alert('Failed to delete the account. Please try again.');
+    }
+  };
+  
+
   return (
-    <div>
-      <h2>Profile</h2>
-      {error && <p style={{ color: 'red' }}>{error}</p>}
-      <form onSubmit={submitHandler}>
+    <div className="container mx-auto my-10 p-5 bg-white rounded-md shadow-md">
+      <h2 className="text-2xl font-bold mb-5">My Profile</h2>
+      <div className="mb-4">
+        <label className="block text-gray-700">Name</label>
+        <input
+          type="text"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          className="w-full px-4 py-2 border rounded-md"
+        />
+      </div>
+      <div className="mb-4">
+        <label className="block text-gray-700">Email</label>
         <input
           type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          value={userData.email}
+          disabled
+          className="w-full px-4 py-2 border rounded-md bg-gray-100"
         />
+      </div>
+      <div className="mb-4">
+        <label className="block text-gray-700">About</label>
         <textarea
           value={about}
           onChange={(e) => setAbout(e.target.value)}
+          className="w-full px-4 py-2 border rounded-md"
         />
-        <button type="submit">Update Profile</button>
-      </form>
+      </div>
+      <div className="flex space-x-4">
+        <button
+          onClick={handleUpdate}
+          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md"
+        >
+          Update
+        </button>
+        <button
+          onClick={handleDelete}
+          className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-md"
+        >
+          Delete Account
+        </button>
+      </div>
     </div>
   );
 };

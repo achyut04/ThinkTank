@@ -132,7 +132,7 @@ input:focus {
 }
 
 .SignupBox {
-  left: 0; /* Make sure it's within the viewport */
+  left: 0; 
 }
 
 .LoginTxt, .SignupTxt {
@@ -376,7 +376,6 @@ input:focus {
 }
 
 
-/* Signup page styling */
 .SignupPage {
   display: flex;
   height: 100vh;

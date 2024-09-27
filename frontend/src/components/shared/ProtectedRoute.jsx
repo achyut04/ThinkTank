@@ -6,7 +6,7 @@ const ProtectedRoute = ({ children }) => {
   const { isAuthenticated, loading } = useAuthContext();
 
   if (loading) {
-    return <div>Loading...</div>;  // Display loading state while checking authentication
+    return <div>Loading...</div>; 
   }
 
   if (!isAuthenticated) {

@@ -5,16 +5,17 @@ const {
   loginUser,
   getUserProfile,
   updateUserProfile,
-  deleteUserProfile
+  deleteUserProfile,
+  getUserById
 } = require('../controllers/userController');
 const { protect } = require('../middleware/authMiddleware');
 
-// Public routes
+
 router.post('/register', registerUser);
 router.post('/login', loginUser);
-
-// Protected routes
 router.get('/profile', protect, getUserProfile);
+router.get('/:id', getUserById);
+
 router.put('/profile', protect, updateUserProfile);
 router.delete('/profile', protect, deleteUserProfile);
 
