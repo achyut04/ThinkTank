@@ -11,13 +11,15 @@ const {
   editComment,
   deleteComment,
   upload, 
-  handleFiles
+  handleFiles,
+  getPostsByCreator
 } = require('../controllers/postController');
 const { protect } = require('../middleware/authMiddleware');
 
 const router = express.Router();
 
 router.get('/', protect, getAllPosts);
+router.get('/creator/:creatorId', protect, getPostsByCreator);
 router.get('/:id', protect, getPostById);
 
 router.post('/', protect, upload.array('files', 10), createPost); 

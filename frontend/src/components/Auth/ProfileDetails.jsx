@@ -3,7 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { useAuthContext } from '../../contexts/AuthContext';
 import { getCurrentUser, updateUserProfile, deleteUserProfile } from '../../services/authService';
 
-const Profile = () => {
+
+const ProfileDetails = () => {
   const [userData, setUserData] = useState({});
   const [name, setName] = useState('');
   const [about, setAbout] = useState('');
@@ -97,4 +98,4 @@ const Profile = () => {
   );
 };
 
-export default Profile;
+export default ProfileDetails;

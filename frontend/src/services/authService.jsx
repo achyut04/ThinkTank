@@ -18,7 +18,6 @@ export const register = async (name, email, password, about) => {
 export const getCurrentUser = async () => {
   try {
     const response = await axios.get('http://localhost:5000/api/users/profile');
-    console.log(response);
     return response.data; 
   } catch (error) {
     console.error('Error fetching user data:', error);

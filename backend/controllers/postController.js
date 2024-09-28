@@ -92,6 +92,18 @@ const getPostById = async (req, res) => {
   }
 };
 
+const getPostsByCreator = async (req, res) => {
+  try {
+    const posts = await Post.find({ author: req.params.creatorId });
+    console.log("I am here");
+    console.log(req.params.id);
+    console.log(posts);
+    res.json(posts);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 
 const updatePost = async (req, res) => {
   const { title, content, tags } = req.body;
@@ -274,4 +286,5 @@ module.exports = {
   deleteComment,
   upload,
   handleFiles,
+  getPostsByCreator,
 };

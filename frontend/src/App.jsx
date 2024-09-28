@@ -10,7 +10,8 @@ import Signup from './components/Auth/Register';
 import ProtectedRoute from './components/shared/ProtectedRoute';
 import { ChakraProvider } from '@chakra-ui/react'
 import CreatePost from './components/Posts/CreatePost';
-import Profile from './components/Auth/Profile';
+import ProfileDetails from './components/Auth/ProfileDetails';
+import Profile from './pages/ProfilePage';
 
 function Layout() {
   const location = useLocation();
@@ -25,6 +26,15 @@ function Layout() {
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
+
+        <Route
+          path="/me"
+          element={
+            <ProtectedRoute>
+              <ProfileDetails />
+            </ProtectedRoute>
+          }
+        />
 
         <Route
           path="/profile"

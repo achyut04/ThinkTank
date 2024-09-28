@@ -103,3 +103,14 @@ export const fetchFile = async (filename) => {
     return null;
   }
 };
+
+export const getPostsByCreator = async (creatorId) => {
+  try {
+    const response = await axios.get(`http://localhost:5000/api/posts/creator/${creatorId}`);
+    console.log(response.data);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching posts by creator:', error);
+    return null;
+  }
+}
