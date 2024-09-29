@@ -1,18 +1,27 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Box, Heading, Text, SimpleGrid, VStack, useColorModeValue, HStack, Avatar, Button, Tab, Tabs, TabList, TabPanels, TabPanel } from '@chakra-ui/react';
+import { Box, Heading, Text, SimpleGrid, VStack, useColorModeValue, HStack, Avatar, Button, Tab, Tabs, TabList, TabPanels, TabPanel, Spinner } from '@chakra-ui/react';
 import PostCard from '../components/Posts/PostCard';
 import { getPostsByCreator } from '../services/postService';
 import { getCurrentUser } from '../services/authService';
+import { getCommentsByUser } from '../services/commentService';
 
 const ProfilePage = () => {
   const [posts, setPosts] = useState([]);
+  const [comments, setComments] = useState([]);
   const [currentUser, setCurrentUser] = useState(null);
+  const [activeTab, setActiveTab] = useState(0); 
+  const [loading, setLoading] = useState(true);
 
   const bgColor = useColorModeValue('gray.50', 'gray.900');
   const textColor = useColorModeValue('gray.600', 'gray.200');
 
   useEffect(() => {
+    const savedTabIndex = localStorage.getItem('activeTab');
+    if (savedTabIndex) {
+      setActiveTab(parseInt(savedTabIndex, 10));
+    }
+
     const fetchUser = async () => {
       try {
         const user = await getCurrentUser();
@@ -21,6 +30,8 @@ const ProfilePage = () => {
         }
       } catch (error) {
         console.error('Failed to fetch user:', error);
+      } finally {
+        setLoading(false);
       }
     };
     fetchUser();
@@ -44,6 +55,38 @@ const ProfilePage = () => {
     fetchUserPosts();
   }, [currentUser]);
 
+  useEffect(() => {
+    const fetchUserComments = async () => {
+      if (!currentUser) return;
+      try {
+        const data = await getCommentsByUser(currentUser.id);
+        if (Array.isArray(data)) {
+          setComments(data);
+        } else {
+          console.error('Fetched data is not an array:', data);
+        }
+      } catch (error) {
+        console.error('Error fetching user comments:', error);
+      }
+    };
+
+    fetchUserComments();
+  }, [currentUser]);
+
+
+  const handleTabChange = (index) => {
+    setActiveTab(index);
+    localStorage.setItem('activeTab', index);
+  };
+
+  if (loading) {
+    return (
+      <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
+        <Spinner size="xl" />
+      </Box>
+    );
+  }
+
   return (
     <Box maxW="900px" mx="auto" mt={10} p={5} borderWidth="1px" borderRadius="lg">
       <HStack spacing={5}>
@@ -56,7 +99,7 @@ const ProfilePage = () => {
         </Box>
       </HStack>
 
-      <Tabs mt={10} variant="enclosed">
+      <Tabs mt={10} variant="enclosed" index={activeTab} onChange={handleTabChange}>
         <TabList>
           <Tab>Ideas</Tab>
           <Tab>Comments</Tab>
@@ -86,9 +129,21 @@ const ProfilePage = () => {
           <TabPanel>
             <VStack spacing={8} align="start" width="100%">
               <Heading as="h2" size="lg">Comments</Heading>
-              <Text color={textColor} fontSize="lg">
-                No comments available at the moment.
-              </Text>
+              {comments.length > 0 ? (
+                comments.map((comment) => (
+                  <Box key={comment._id} p={4} borderWidth="1px" borderRadius="lg" width="100%">
+                    <Text fontWeight="bold">Comment:</Text>
+                    <Text>{comment.content}</Text>
+                    <Link to={`/posts/${comment.post._id}`} style={{ color: 'blue' }}>
+                      Go to Post: {comment.post.title}
+                    </Link>
+                  </Box>
+                ))
+              ) : (
+                <Text color={textColor} fontSize="lg">
+                  No comments available at the moment.
+                </Text>
+              )}
             </VStack>
           </TabPanel>
         </TabPanels>

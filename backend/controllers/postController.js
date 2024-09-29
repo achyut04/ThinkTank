@@ -73,14 +73,14 @@ const getAllPosts = async (req, res) => {
 const getPostById = async (req, res) => {
   try {
     const post = await Post.findById(req.params.id)
-      .populate('author', 'email')
       .populate({
         path: 'comments',
         populate: {
-          path: 'author', 
-          select: 'email _id',  
-        },
-      });
+          path: 'author',
+          select: 'email'
+        }
+      })
+      .populate('author', 'name email'); 
 
     if (!post) {
       return res.status(404).json({ message: 'Post not found' });
@@ -88,7 +88,8 @@ const getPostById = async (req, res) => {
 
     res.json(post);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error('Error fetching post:', error);
+    res.status(500).json({ message: 'Server error' });
   }
 };
 
@@ -185,23 +186,34 @@ const removeSpark = async (req, res) => {
 
 
 const commentOnPost = async (req, res) => {
-  const { author, content } = req.body;
-
   try {
-    const comment = await Comment.create({ author, content });
-    const post = await Post.findById(req.params.id);
+    const { content } = req.body;
+    const postId = req.params.id;
 
-    post.comments.push(comment._id);
-    post.totalComments += 1;
+    // Create the new comment
+    const newComment = new Comment({
+      author: req.user._id,
+      content,
+      post: postId,
+    });
 
-    await post.save();
-    await comment.populate('author', 'email');
+  
+    await newComment.save();
 
-    res.status(201).json(comment);
+   
+    const updatedPost = await Post.findByIdAndUpdate(
+      postId,
+      { $push: { comments: newComment._id } }, 
+      { new: true }
+    );
+
+    res.status(201).json(newComment);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error('Error adding comment:', error);
+    res.status(500).json({ message: 'Error adding comment' });
   }
 };
+
 
 
 const editComment = async (req, res) => {
@@ -270,6 +282,7 @@ const handleFiles = async (req, res) => {
     res.status(500).send('Server error');
   }
 };
+
 
 
 

@@ -34,12 +34,19 @@ export const getAllPosts = async () => {
 export const getPostById = async (id) => {
   try {
     const response = await axios.get(`http://localhost:5000/api/posts/${id}`);
-    return response.data;
+    if (response && response.data) {
+      return response.data;
+    } else {
+      console.error('No data found in response');
+      return null;
+    }
   } catch (error) {
     console.error('Error fetching post:', error);
     return null;
   }
 };
+
+
 
 export const updatePost = async (postId, postData) => {
   try {

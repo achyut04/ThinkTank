@@ -45,21 +45,36 @@ const PostPage = () => {
   };
 
   const handleCommentSubmit = async (comment) => {
-    if (!comment) return;
-
+    if (!comment) {
+      console.log('No comment provided.');
+      return;
+    }
+  
     const commentData = {
       author: currentUser,
       content: comment,
+      post: id,
     };
-
-    const addedComment = await addComment(id, commentData);
-    if (addedComment) {
-      const updatedPost = await getPostById(id);
-      if (updatedPost) {
-        setPost(updatedPost);
+  
+    console.log('Submitting comment:', commentData); 
+  
+    try {
+      const addedComment = await addComment(id, commentData);
+      if (addedComment) {
+        console.log('Comment added successfully:', addedComment); 
+        const updatedPost = await getPostById(id);
+        if (updatedPost) {
+          console.log('Updated post after adding comment : ', updatedPost);
+          setPost(updatedPost);
+        }
+      } else {
+        console.error('Failed to add comment.');
       }
+    } catch (error) {
+      console.error('Error in handleCommentSubmit:', error); 
     }
   };
+  
 
   const handleSpark = async () => {
     const sparkedPost = await sparkPost(id);
@@ -194,48 +209,53 @@ const PostPage = () => {
           <div className="mt-6">
             <h3 className="text-2xl font-semibold mb-4">Comments</h3>
             <ul>
-              {post.comments.map((comment) => {
-                const formattedCommentDate = comment.dateOfComment
-                  ? new Date(comment.dateOfComment).toLocaleString('en-US', {
-                      year: 'numeric',
-                      month: 'long',
-                      day: 'numeric',
-                      hour: '2-digit',
-                      minute: '2-digit',
-                    })
-                  : 'Date not available';
+              {post.comments && post.comments.length > 0 ? (
+                post.comments.map((comment) => {
+                  const formattedCommentDate = comment.dateOfComment
+                    ? new Date(comment.dateOfComment).toLocaleString('en-US', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                      })
+                    : 'Date not available';
 
-                const isPostAuthor = currentUser === post.author._id;
-                const isCommentAuthor = comment.author && currentUser === comment.author._id;
+                  const isPostAuthor = currentUser === post.author._id;
+                  const isCommentAuthor = comment.author && currentUser === comment.author._id;
 
-                return (
-                  <li key={comment._id} className="border-t border-gray-200 py-4">
-                    <p className="text-gray-700">{comment.content}</p>
-                    <span className="text-gray-500 text-sm">
-                      By {comment.author?.email || 'Unknown'} on {formattedCommentDate}
-                    </span>
+                  return (
+                    <li key={comment._id} className="border-t border-gray-200 py-4">
+                      <p className="text-gray-700">{comment.content}</p>
+                      <span className="text-gray-500 text-sm">
+                        By {comment.author?.email || 'Unknown'} on {formattedCommentDate}
+                      </span>
 
-                    {(isPostAuthor || isCommentAuthor) && (
-                      <div className="flex space-x-2 mt-2">
-                        <button
-                          className="text-blue-500 hover:underline"
-                          onClick={() => handleEditComment(comment._id, comment.content)}
-                        >
-                          Edit
-                        </button>
-                        <button
-                          className="text-red-500 hover:underline"
-                          onClick={() => handleDeleteComment(comment._id)}
-                        >
-                          Delete
-                        </button>
-                      </div>
-                    )}
-                  </li>
-                );
-              })}
+                      {(isPostAuthor || isCommentAuthor) && (
+                        <div className="flex space-x-2 mt-2">
+                          <button
+                            className="text-blue-500 hover:underline"
+                            onClick={() => handleEditComment(comment._id, comment.content)}
+                          >
+                            Edit
+                          </button>
+                          <button
+                            className="text-red-500 hover:underline"
+                            onClick={() => handleDeleteComment(comment._id)}
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      )}
+                    </li>
+                  );
+                })
+              ) : (
+                <p>No comments yet. Be the first to comment!</p>
+              )}
             </ul>
           </div>
+
         </>
       ) : (
         <p>Loading post...</p>

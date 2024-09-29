@@ -1,4 +1,6 @@
 const User = require('../models/User');
+const Post = require('../models/Post');
+const Comment = require('../models/Comment');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
@@ -135,6 +137,21 @@ const deleteUserProfile = async (req, res) => {
     res.status(500).json({ message: 'Server error during deletion' });
   }
 };
+const getCommentsByUser = async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const comments = await Comment.find({ author: userId }).populate('post', '_id title');
+
+    if (!comments) {
+      return res.status(404).json({ message: 'No comments found for this user.' });
+    }
+
+    res.status(200).json(comments);
+  } catch (error) {
+    console.error('Error fetching comments by user:', error);
+    res.status(500).json({ message: 'Error fetching comments' });
+  }
+};
 
 
 module.exports = {
@@ -144,4 +161,5 @@ module.exports = {
   updateUserProfile,
   deleteUserProfile,
   getUserById,
+  getCommentsByUser,
 };
