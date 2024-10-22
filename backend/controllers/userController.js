@@ -3,6 +3,9 @@ const Post = require('../models/Post');
 const Comment = require('../models/Comment');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const multer = require('multer');
+const path = require('path');
+
 
 const registerUser = async (req, res) => {
   const { name, email, password, about } = req.body;
@@ -63,7 +66,6 @@ const loginUser = async (req, res) => {
 
 
 const getUserProfile = async (req, res) => {
-  console.log('GET /api/users/profile request received.');
   if (req.user) {
     res.json({
       isAuthenticated: true,
@@ -72,6 +74,7 @@ const getUserProfile = async (req, res) => {
         email: req.user.email,
         name: req.user.name,
         about: req.user.about,
+        profilePicture: req.user.profilePicture,
       },
     });
   } else {
@@ -108,6 +111,10 @@ const updateUserProfile = async (req, res) => {
     user.name = name || user.name;
     user.about = about || user.about;
 
+    if (req.file) {
+      user.profilePicture = `/uploads/profile_pics/${req.file.filename}`; 
+    }
+
     if (password) {
       user.password = await bcrypt.hash(password, 10);
     }
@@ -127,13 +134,10 @@ const deleteUserProfile = async (req, res) => {
       return res.status(404).json({ message: 'User not found' });
     }
 
-    console.log(`Deleting user: ${user._id}, Email: ${user.email}`); 
-
     await User.findByIdAndDelete(req.user.id);
     res.clearCookie('jwt');
     res.json({ message: 'User deleted successfully' });
   } catch (error) {
-    console.error('Error deleting user profile:', error.message); 
     res.status(500).json({ message: 'Server error during deletion' });
   }
 };
@@ -152,6 +156,20 @@ const getCommentsByUser = async (req, res) => {
     res.status(500).json({ message: 'Error fetching comments' });
   }
 };
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, 'uploads/profile_pics/'); 
+  },
+  filename: function (req, file, cb) {
+    cb(null, Date.now() + path.extname(file.originalname)); 
+  }
+});
+
+
+const upload = multer({ 
+  storage: storage,
+  limits: { fileSize: 5 * 1024 * 1024 }
+});
 
 
 module.exports = {
@@ -162,4 +180,5 @@ module.exports = {
   deleteUserProfile,
   getUserById,
   getCommentsByUser,
+  upload,
 };

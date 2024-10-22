@@ -77,10 +77,10 @@ const getPostById = async (req, res) => {
         path: 'comments',
         populate: {
           path: 'author',
-          select: 'email'
+          select: 'email profilePicture' 
         }
       })
-      .populate('author', 'name email'); 
+      .populate('author', 'name email profilePicture'); 
 
     if (!post) {
       return res.status(404).json({ message: 'Post not found' });

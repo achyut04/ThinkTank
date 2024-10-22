@@ -23,6 +23,11 @@ const PostDetails = ({ post, onSpark }) => {
   const bgColor = useColorModeValue('white', 'gray.800');
   const textColor = useColorModeValue('gray.700', 'gray.200');
 
+  // Correct profile picture logic
+  const profilePictureUrl = author?.profilePicture 
+    ? `http://localhost:5000${author.profilePicture}` 
+    : 'https://img.freepik.com/free-vector/businessman-character-avatar-isolated_24877-60111.jpg?size=338&ext=jpg&ga=GA1.1.2008272138.1726531200&semt=ais_hybrid';
+
   return (
     <Box bg={bgColor} rounded="lg" shadow="lg" p={6} transition="all 0.3s">
       <Heading as="h1" size="xl" mb={4} color="blue.600">
@@ -30,7 +35,7 @@ const PostDetails = ({ post, onSpark }) => {
       </Heading>
       <Flex align="center" mb={6}>
         <Avatar
-          src="https://img.freepik.com/free-vector/businessman-character-avatar-isolated_24877-60111.jpg?size=338&ext=jpg&ga=GA1.1.2008272138.1726531200&semt=ais_hybrid"
+          src={profilePictureUrl}
           mr={2}
         />
         <Box>
@@ -71,5 +76,3 @@ const PostDetails = ({ post, onSpark }) => {
 };
 
 export default PostDetails;
-
-

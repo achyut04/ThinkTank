@@ -1,14 +1,15 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuthContext } from '../../contexts/AuthContext';
 import { SearchContext } from '../../contexts/searchContext';
 import { FaUserCircle } from 'react-icons/fa';
+import { getCurrentUser } from '../../services/authService';
 
 const Navbar = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const { logout } = useAuthContext();
   const navigate = useNavigate();
-
+  const [profilePicture, setProfilePicture] = useState(null);
   const { searchTerm, setSearchTerm } = useContext(SearchContext);
   const [localSearchTerm, setLocalSearchTerm] = useState('');
 
@@ -18,6 +19,19 @@ const Navbar = () => {
     setLocalSearchTerm('');
   };
 
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const user = await getCurrentUser();
+        if (user && user.isAuthenticated) {
+          setProfilePicture(user.user.profilePicture); 
+        }
+      } catch (error) {
+        console.error('Failed to fetch user:', error);
+      }
+    };
+    fetchUser();
+  }, []);
   const handleLogout = () => {
     logout();
     navigate('/login');
@@ -41,12 +55,6 @@ const Navbar = () => {
             placeholder="Search ideas"
             className="px-4 py-2 border rounded-lg"
           />
-          <button
-            type="submit"
-            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full"
-          >
-            Search
-          </button>
         </form>
 
         <div className="flex items-center space-x-4">
@@ -58,10 +66,21 @@ const Navbar = () => {
           </Link>
 
           <div className="relative">
-            <FaUserCircle
-              className="w-10 h-10 text-gray-600 cursor-pointer"
-              onClick={() => setDropdownOpen(!dropdownOpen)}
-            />
+          {profilePicture ? (
+          <img
+            src={`http://localhost:5000${profilePicture}`}
+            className="w-10 h-10 rounded-full cursor-pointer" 
+            onClick={() => setDropdownOpen(!dropdownOpen)}
+            alt="Profile"
+          />
+                ) : (
+
+                
+                  <FaUserCircle
+                    className="w-10 h-10 text-gray-600 cursor-pointer"
+                    onClick={() => setDropdownOpen(!dropdownOpen)}
+                  />
+                )}
             {dropdownOpen && (
               <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-50">
                 <Link

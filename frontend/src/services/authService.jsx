@@ -26,9 +26,13 @@ export const getCurrentUser = async () => {
 };
 
 
-export const updateUserProfile = async (name, about) => {
+export const updateUserProfile = async (formData) => {
   try {
-    const response = await axios.put('http://localhost:5000/api/users/profile', { name, about });
+    const response = await axios.put('http://localhost:5000/api/users/profile', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data', 
+      },
+    });
     return response.data;
   } catch (error) {
     console.error('Error updating profile:', error);

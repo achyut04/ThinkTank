@@ -153,10 +153,11 @@ const PostPage = () => {
 
   return (
     <div className="container mx-auto p-6">
+      
       {post ? (
         <>
           <PostDetails post={post} onSpark={handleSpark} />
-
+          
           {currentUser === post.author._id && (
             <div className="flex space-x-4 mt-6">
               <button className="text-blue-500 hover:underline" onClick={handleEditPost}>
@@ -225,28 +226,44 @@ const PostPage = () => {
                   const isCommentAuthor = comment.author && currentUser === comment.author._id;
 
                   return (
-                    <li key={comment._id} className="border-t border-gray-200 py-4">
-                      <p className="text-gray-700">{comment.content}</p>
-                      <span className="text-gray-500 text-sm">
-                        By {comment.author?.email || 'Unknown'} on {formattedCommentDate}
-                      </span>
-
-                      {(isPostAuthor || isCommentAuthor) && (
-                        <div className="flex space-x-2 mt-2">
-                          <button
-                            className="text-blue-500 hover:underline"
-                            onClick={() => handleEditComment(comment._id, comment.content)}
-                          >
-                            Edit
-                          </button>
-                          <button
-                            className="text-red-500 hover:underline"
-                            onClick={() => handleDeleteComment(comment._id)}
-                          >
-                            Delete
-                          </button>
-                        </div>
+                    <li key={comment._id} className="border-t border-gray-200 py-4 flex items-start">
+                      {comment.author?.profilePicture ? (
+                        <img
+                          src={`http://localhost:5000${comment.author.profilePicture}`}
+                          alt="Profile"
+                          className="w-10 h-10 rounded-full mr-4 object-cover"
+                        />
+                      ) : (
+                        <img
+                          src="https://img.freepik.com/free-vector/businessman-character-avatar-isolated_24877-60111.jpg?size=338&ext=jpg&ga=GA1.1.2008272138.1726531200&semt=ais_hybrid" // Path to a default avatar
+                          alt="Default Avatar"
+                          className="w-10 h-10 rounded-full mr-4 object-cover"
+                        />
                       )}
+
+                      <div className="flex-1">
+                        <p className="text-gray-700">{comment.content}</p>
+                        <span className="text-gray-500 text-sm">
+                          By {comment.author?.email || 'Unknown'} on {formattedCommentDate}
+                        </span>
+
+                        {(isPostAuthor || isCommentAuthor) && (
+                          <div className="flex space-x-2 mt-2">
+                            <button
+                              className="text-blue-500 hover:underline"
+                              onClick={() => handleEditComment(comment._id, comment.content)}
+                            >
+                              Edit
+                            </button>
+                            <button
+                              className="text-red-500 hover:underline"
+                              onClick={() => handleDeleteComment(comment._id)}
+                            >
+                              Delete
+                            </button>
+                          </div>
+                        )}
+                      </div>
                     </li>
                   );
                 })
@@ -254,6 +271,8 @@ const PostPage = () => {
                 <p>No comments yet. Be the first to comment!</p>
               )}
             </ul>
+
+
           </div>
 
         </>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Flex, Text, Tag, VStack, HStack } from '@chakra-ui/react';
+import { Box, Flex, Text, Tag, VStack, HStack , Avatar} from '@chakra-ui/react';
 import { SparkIcon } from './SparkIcon'; 
 
 const PostCard = ({ post }) => {
@@ -29,6 +29,7 @@ const PostCard = ({ post }) => {
           {content}
         </Text>
         <Flex justify="space-between" align="center">
+          
           <Text fontSize="sm" color="gray.500">
             By {author.email}
           </Text>

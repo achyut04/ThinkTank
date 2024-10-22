@@ -12,6 +12,7 @@ const ProfilePage = () => {
   const [currentUser, setCurrentUser] = useState(null);
   const [activeTab, setActiveTab] = useState(0); 
   const [loading, setLoading] = useState(true);
+  const [profilePicture, setProfilePicture] = useState(null);
 
   const bgColor = useColorModeValue('gray.50', 'gray.900');
   const textColor = useColorModeValue('gray.600', 'gray.200');
@@ -27,6 +28,7 @@ const ProfilePage = () => {
         const user = await getCurrentUser();
         if (user && user.isAuthenticated) {
           setCurrentUser(user.user);
+          setProfilePicture(user.user.profilePicture);
         }
       } catch (error) {
         console.error('Failed to fetch user:', error);
@@ -90,7 +92,11 @@ const ProfilePage = () => {
   return (
     <Box maxW="900px" mx="auto" mt={10} p={5} borderWidth="1px" borderRadius="lg">
       <HStack spacing={5}>
-        <Avatar size="xl" src="../assets/avatar.png" />
+      <Avatar
+        size="xl"
+        src={currentUser?.profilePicture ? `http://localhost:5000${currentUser.profilePicture}` : '../assets/avatar.png'} // Dynamically show real or dummy picture
+        alt="Profile Picture"
+      />
         <Box>
           <Heading size="md">{currentUser?.name}</Heading>
           <Button mt={3} size="sm" colorScheme="blue">
