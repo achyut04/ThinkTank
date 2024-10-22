@@ -67,9 +67,7 @@ const PostDetails = ({ post, onSpark }) => {
             {comments.length} Comments
           </Button>
         </Flex>
-        <Button leftIcon={<Icon as={FaShare} />} variant="ghost">
-          Share
-        </Button>
+
       </Flex>
     </Box>
   );

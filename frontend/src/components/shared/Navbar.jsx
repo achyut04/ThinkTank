@@ -41,7 +41,7 @@ const Navbar = () => {
     <header className="bg-white shadow-md py-4 fixed w-full z-10" style={{ position: 'sticky', top: 0 }}>
       <div className="container mx-auto flex justify-between items-center">
         <Link to="/home">
-          <div className="text-3xl font-bold text-blue-500">
+          <div className="text-3xl font-bold text-black-500">
             <span>Think</span>
             <span className="text-blue-500">Tank</span>!
           </div>

@@ -12,10 +12,10 @@ const PostCard = ({ post }) => {
   });
 
   return (
-    <Box borderWidth="1px" borderRadius="lg" p={4} shadow="sm" bg="white" w="full">
+    <Box borderWidth="2px" borderRadius="lg" p={4} shadow="sm" bg="white" w="full">
       <VStack align="stretch" spacing={4}>
         <Flex justify="space-between" align="center">
-          <Text fontSize="sm" color="gray.500">
+          <Text fontSize="sm" color="gray.700">
             {formattedDate}
           </Text>
           <Tag size="sm" colorScheme="blue" borderRadius="full">
@@ -25,18 +25,10 @@ const PostCard = ({ post }) => {
         <Text fontSize="lg" fontWeight="semibold" noOfLines={2}>
           {title}
         </Text>
-        <Text fontSize="sm" color="gray.700" noOfLines={3}>
-          {content}
-        </Text>
         <Flex justify="space-between" align="center">
-          
-          <Text fontSize="sm" color="gray.500">
+          <Text fontSize="sm" color="gray.700">
             By {author.email}
           </Text>
-          <HStack spacing={1}>
-            <SparkIcon className="text-yellow-400" boxSize={4} />
-            <Text fontSize="sm">{totalSparks}</Text>
-          </HStack>
         </Flex>
       </VStack>
     </Box>

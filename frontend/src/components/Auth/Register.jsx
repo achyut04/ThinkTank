@@ -1,23 +1,54 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import './AuthForm.css';
+import { ChakraProvider, extendTheme } from '@chakra-ui/react';
+import {
+  Box,
+  Button,
+  FormControl,
+  FormLabel,
+  Input,
+  VStack,
+  Heading,
+  Text,
+  Textarea,
+  Link,
+  Container,
+  useToast,
+} from '@chakra-ui/react';
+
+const theme = extendTheme({
+  // Customize the Chakra UI theme if needed
+});
 
 const Register = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [about, setAbout] = useState('');
-  const [error, setError] = useState('');
   const navigate = useNavigate();
+  const toast = useToast();
 
   const submitHandler = async (e) => {
     e.preventDefault();
     try {
       await axios.post('http://localhost:5000/api/users/register', { name, email, password, about }, { withCredentials: true });
+      toast({
+        title: "Registration Successful",
+        description: "You've successfully created an account.",
+        status: "success",
+        duration: 3000,
+        isClosable: true,
+      });
       navigate('/login');
     } catch (error) {
-      setError('Registration failed');
+      toast({
+        title: "Registration Failed",
+        description: "Please check your information and try again.",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
     }
   };
 
@@ -26,64 +57,68 @@ const Register = () => {
   };
 
   return (
-    <div className="SignupPage">
-      <div className="SignupBox">
-        <h2 className="SignupTxt">Create account!</h2>
-        {error && <p className="error-text">{error}</p>}
-        <form onSubmit={submitHandler}>
-          <div className="InputFeild">
-            <div className="NameBox">
-              <label>Name</label>
-              <input
-                type="text"
-                placeholder="Enter your name"
-                className="NameInput"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                required
-              />
-            </div>
-            <div className="EmailBox">
-              <label>Email</label>
-              <input
-                type="email"
-                placeholder="Enter email"
-                className="EmailInput"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
-            </div>
-            <div className="PasswordBox">
-              <label>Password</label>
-              <input
-                type="password"
-                placeholder="Enter password"
-                className="PasswordInput0"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
-            </div>
-            <div className="AboutBox">
-              <label>About</label>
-              <textarea
-                placeholder="Tell us about yourself"
-                className="AboutInput"
-                value={about}
-                onChange={(e) => setAbout(e.target.value)}
-                required
-              />
-            </div>
-          </div>
-          <button type="submit" className="SignupBtn">Create</button>
-        </form>
-        <button className="SignupBtn" onClick={redirectToLogin}>Already have an account? Login</button>
-      </div>
-      <div className="SideImg">
-        <h1 className="BrandName">ThinkTank</h1>
-      </div>
-    </div>
+    <ChakraProvider theme={theme}>
+      <Container maxW="lg" py={12}>
+        <Box bg="white" p={8} rounded="lg" boxShadow="lg">
+          <VStack spacing={8} align="stretch">
+            <VStack spacing={2} align="center">
+              <Heading>Create your ThinkTank account</Heading>
+              <Text fontSize="sm" color="gray.600">
+                Please fill in the details to create your account
+              </Text>
+            </VStack>
+            <form onSubmit={submitHandler}>
+              <VStack spacing={4}>
+                <FormControl id="name" isRequired>
+                  <FormLabel>Name</FormLabel>
+                  <Input
+                    type="text"
+                    placeholder="Enter your name"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                  />
+                </FormControl>
+                <FormControl id="email" isRequired>
+                  <FormLabel>Email</FormLabel>
+                  <Input
+                    type="email"
+                    placeholder="example@gmail.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                  />
+                </FormControl>
+                <FormControl id="password" isRequired>
+                  <FormLabel>Password</FormLabel>
+                  <Input
+                    type="password"
+                    placeholder="********"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                  />
+                </FormControl>
+                <FormControl id="about" isRequired>
+                  <FormLabel>About</FormLabel>
+                  <Textarea
+                    placeholder="Tell us about yourself"
+                    value={about}
+                    onChange={(e) => setAbout(e.target.value)}
+                  />
+                </FormControl>
+                <Button type="submit" colorScheme="blue" width="full">
+                  Create Account
+                </Button>
+              </VStack>
+            </form>
+            <Text fontSize="sm" textAlign="center">
+              Already have an account?{' '}
+              <Link color="blue.500" onClick={redirectToLogin}>
+                Log in
+              </Link>
+            </Text>
+          </VStack>
+        </Box>
+      </Container>
+    </ChakraProvider>
   );
 };
 

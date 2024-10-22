@@ -439,3 +439,27 @@ input:focus {
   color: white;
 }
 
+.AboutBox {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.AboutBox label {
+  font-size: 16px;
+  margin-bottom: 8px;
+}
+
+.AboutInput {
+  width: 100%;
+  height: 100px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  resize: none;
+}
+
+.AboutInput:focus {
+  border-color: #4a90e2;
+  outline: none;
+}

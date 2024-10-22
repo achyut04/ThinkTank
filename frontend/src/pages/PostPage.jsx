@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import PostDetails from '../components/Posts/PostDetails';
 import CommentBox from '../components/comments/CommentBox';
+import EditPostModal from '../components/Posts/EditPostModal';
 import { getPostById, addComment, sparkPost, updatePost, deletePost, fetchFile } from '../services/postService';
 import { getCurrentUser } from '../services/authService';
 import { updateComment, deleteComment } from '../services/commentService';
@@ -12,6 +13,10 @@ const PostPage = () => {
   const [post, setPost] = useState(null);
   const [currentUser, setCurrentUser] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [editPostData, setEditPostData] = useState({ title: '', content: '' });
+  const [editingCommentId, setEditingCommentId] = useState(null);
+  const [editCommentContent, setEditCommentContent] = useState('');
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -29,11 +34,16 @@ const PostPage = () => {
       const data = await getPostById(id);
       if (data) {
         setPost(data);
+        setEditPostData({ title: data.title, content: data.content });
       }
       setLoading(false);
     };
     fetchPost();
   }, [id]);
+
+  const handleEditPost = () => {
+    setIsEditModalOpen(true);
+  };
 
   const handleFiles = async (file) => {
     const baseUrl = 'http://localhost:5000'; 
@@ -56,26 +66,19 @@ const PostPage = () => {
       post: id,
     };
   
-    console.log('Submitting comment:', commentData); 
-  
     try {
       const addedComment = await addComment(id, commentData);
       if (addedComment) {
-        console.log('Comment added successfully:', addedComment); 
         const updatedPost = await getPostById(id);
         if (updatedPost) {
-          console.log('Updated post after adding comment : ', updatedPost);
           setPost(updatedPost);
         }
-      } else {
-        console.error('Failed to add comment.');
       }
     } catch (error) {
       console.error('Error in handleCommentSubmit:', error); 
     }
   };
   
-
   const handleSpark = async () => {
     const sparkedPost = await sparkPost(id);
     if (sparkedPost) {
@@ -86,15 +89,11 @@ const PostPage = () => {
     }
   };
 
-  const handleEditPost = async () => {
-    const newTitle = prompt('Edit your post title:', post.title);
-    const newContent = prompt('Edit your post content:', post.content);
-
-    if (!newTitle || !newContent) return;
+  const handleSaveEditPost = async () => {
+    if (!editPostData.title || !editPostData.content) return;
 
     setLoading(true);
-    const updatedPostData = { title: newTitle, content: newContent };
-    const updatedPost = await updatePost(id, updatedPostData);
+    const updatedPost = await updatePost(id, editPostData);
 
     if (updatedPost) {
       const refreshedPost = await getPostById(id);
@@ -104,6 +103,7 @@ const PostPage = () => {
     } else {
       console.error('Failed to update post');
     }
+    setIsEditModalOpen(false);
     setLoading(false);
   };
 
@@ -117,19 +117,27 @@ const PostPage = () => {
     }
   };
 
-  const handleEditComment = async (commentId, currentContent) => {
-    const newContent = prompt('Edit your comment:', currentContent);
-    if (!newContent) return;
+  const handleEditComment = (commentId, currentContent) => {
+    setEditingCommentId(commentId);
+    setEditCommentContent(currentContent);
+  };
 
-    const updatedComment = await updateComment(id, commentId, newContent);
-    if (updatedComment) {
-      const updatedPost = await getPostById(id);
-      if (updatedPost) {
-        setPost(updatedPost);
+  const handleSaveEditedComment = async () => {
+    if (!editCommentContent) return;
+
+    try {
+      const updatedComment = await updateComment(id, editingCommentId, editCommentContent);
+      if (updatedComment) {
+        const updatedPost = await getPostById(id);
+        if (updatedPost) {
+          setPost(updatedPost);
+        }
       }
-    } else {
-      console.error('Failed to update comment');
+    } catch (error) {
+      console.error('Error in handleSaveEditedComment:', error); 
     }
+    setEditingCommentId(null); // Reset edit mode
+    setEditCommentContent(''); // Reset the content
   };
 
   const handleDeleteComment = async (commentId) => {
@@ -142,8 +150,6 @@ const PostPage = () => {
       if (updatedPost) {
         setPost(updatedPost);
       }
-    } else {
-      console.error('Failed to delete comment');
     }
   };
 
@@ -169,6 +175,15 @@ const PostPage = () => {
             </div>
           )}
 
+          {isEditModalOpen && (
+            <EditPostModal
+              postId={post._id}
+              closeModal={() => setIsEditModalOpen(false)}
+              initialData={{ title: post.title, content: post.content, tags: post.tags, links: post.links, files: post.files }}
+            />
+          )}
+
+          {/* Links and Files Section */}
           {post.links && post.links.length > 0 && (
             <div className="mt-6">
               <h3 className="text-2xl font-semibold mb-4">References</h3>
@@ -202,6 +217,7 @@ const PostPage = () => {
             </div>
           )}
 
+          {/* Comments Section */}
           <div className="mt-6">
             <h3 className="text-2xl font-semibold mb-4">Add a Comment</h3>
             <CommentBox onSubmit={handleCommentSubmit} />
@@ -235,17 +251,36 @@ const PostPage = () => {
                         />
                       ) : (
                         <img
-                          src="https://img.freepik.com/free-vector/businessman-character-avatar-isolated_24877-60111.jpg?size=338&ext=jpg&ga=GA1.1.2008272138.1726531200&semt=ais_hybrid" // Path to a default avatar
+                          src="https://img.freepik.com/free-vector/businessman-character-avatar-isolated_24877-60111.jpg?size=338&ext=jpg&ga=GA1.1.2008272138.1726531200&semt=ais_hybrid"
                           alt="Default Avatar"
                           className="w-10 h-10 rounded-full mr-4 object-cover"
                         />
                       )}
 
                       <div className="flex-1">
-                        <p className="text-gray-700">{comment.content}</p>
-                        <span className="text-gray-500 text-sm">
-                          By {comment.author?.email || 'Unknown'} on {formattedCommentDate}
-                        </span>
+                        {/* If editing, show the text box */}
+                        {editingCommentId === comment._id ? (
+                          <div>
+                            <textarea
+                              value={editCommentContent}
+                              onChange={(e) => setEditCommentContent(e.target.value)}
+                              className="w-full border p-2"
+                            />
+                            <button
+                              className="text-blue-500 hover:underline mt-2"
+                              onClick={handleSaveEditedComment}
+                            >
+                              Save
+                            </button>
+                          </div>
+                        ) : (
+                          <>
+                            <p className="text-gray-700">{comment.content}</p>
+                            <span className="text-gray-500 text-sm">
+                              By {comment.author?.email || 'Unknown'} on {formattedCommentDate}
+                            </span>
+                          </>
+                        )}
 
                         {(isPostAuthor || isCommentAuthor) && (
                           <div className="flex space-x-2 mt-2">
@@ -271,10 +306,7 @@ const PostPage = () => {
                 <p>No comments yet. Be the first to comment!</p>
               )}
             </ul>
-
-
           </div>
-
         </>
       ) : (
         <p>Loading post...</p>
