@@ -48,3 +48,13 @@ export const deleteUserProfile = async () => {
     throw error;
   }
 };
+
+export const getUserById = async (id) => {
+  try {
+    const response = await axios.get(`http://localhost:5000/api/users/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching user by ID:', error);
+    throw error;
+  }
+};

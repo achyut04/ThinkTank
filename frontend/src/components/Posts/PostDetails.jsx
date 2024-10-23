@@ -8,8 +8,10 @@ import {
   Button,
   Icon,
   useColorModeValue,
+  Link as ChakraLink
 } from '@chakra-ui/react';
 import { FaStar, FaComment, FaShare } from 'react-icons/fa';
+import { Link } from 'react-router-dom';
 
 const PostDetails = ({ post, onSpark }) => {
   const { title, content, author, totalSparks, comments, dateOfPost } = post;
@@ -33,10 +35,13 @@ const PostDetails = ({ post, onSpark }) => {
         {title}
       </Heading>
       <Flex align="center" mb={6}>
-        <Avatar
-          src={profilePictureUrl}
-          mr={2}
-        />
+        <ChakraLink as={Link} to={`/profile/${author?._id}`} _hover={{ textDecoration: 'none' }}>
+          <Avatar
+            src={profilePictureUrl}
+            mr={2}
+            cursor="pointer"
+          />
+        </ChakraLink>
         <Box>
           <Text fontWeight="bold">{author?.email || 'Unknown Author'}</Text>
           <Text fontSize="sm" color="gray.500">

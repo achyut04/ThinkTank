@@ -37,14 +37,14 @@ function Layout() {
         />
 
         <Route
-          path="/profile"
+          path="/profile/:id"
           element={
             <ProtectedRoute>
               <Profile />
             </ProtectedRoute>
           }
         />
-        
+
         <Route
           path="/"
           element={

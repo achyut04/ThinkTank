@@ -1,18 +1,22 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link , useParams} from 'react-router-dom';
 import { Box, Heading, Text, SimpleGrid, VStack, useColorModeValue, HStack, Avatar, Button, Tab, Tabs, TabList, TabPanels, TabPanel, Spinner } from '@chakra-ui/react';
 import PostCard from '../components/Posts/PostCard';
 import { getPostsByCreator } from '../services/postService';
-import { getCurrentUser } from '../services/authService';
+import { getCurrentUser, getUserById } from '../services/authService';
 import { getCommentsByUser } from '../services/commentService';
 
+
 const ProfilePage = () => {
+  const {id} = useParams();
+  const [profileUser, setProfileUser] = useState(null);
   const [posts, setPosts] = useState([]);
   const [comments, setComments] = useState([]);
   const [currentUser, setCurrentUser] = useState(null);
   const [activeTab, setActiveTab] = useState(0); 
   const [loading, setLoading] = useState(true);
   const [profilePicture, setProfilePicture] = useState(null);
+  
 
   const bgColor = useColorModeValue('gray.50', 'gray.900');
   const textColor = useColorModeValue('gray.600', 'gray.200');
@@ -23,27 +27,33 @@ const ProfilePage = () => {
       setActiveTab(parseInt(savedTabIndex, 10));
     }
 
-    const fetchUser = async () => {
+    const fetchUserData = async () => {
       try {
         const user = await getCurrentUser();
+        const profile = await getUserById(id);
+
         if (user && user.isAuthenticated) {
-          setCurrentUser(user.user);
+          setCurrentUser(user.user);  
           setProfilePicture(user.user.profilePicture);
         }
+
+        setProfileUser(profile); 
       } catch (error) {
-        console.error('Failed to fetch user:', error);
+        console.error('Failed to fetch user or profile:', error);
       } finally {
-        setLoading(false);
+        setLoading(false); 
       }
     };
-    fetchUser();
-  }, []);
+
+    fetchUserData();
+  }, [id]);
+
 
   useEffect(() => {
     const fetchUserPosts = async () => {
-      if (!currentUser) return;
+      if (!profileUser) return;
       try {
-        const data = await getPostsByCreator(currentUser.id);
+        const data = await getPostsByCreator(profileUser._id);
         if (Array.isArray(data)) {
           setPosts(data);
         } else {
@@ -55,13 +65,13 @@ const ProfilePage = () => {
     };
 
     fetchUserPosts();
-  }, [currentUser]);
+  }, [profileUser]);
 
   useEffect(() => {
     const fetchUserComments = async () => {
-      if (!currentUser) return;
+      if (!profileUser) return;
       try {
-        const data = await getCommentsByUser(currentUser.id);
+        const data = await getCommentsByUser(profileUser._id);
         if (Array.isArray(data)) {
           setComments(data);
         } else {
@@ -73,7 +83,7 @@ const ProfilePage = () => {
     };
 
     fetchUserComments();
-  }, [currentUser]);
+  }, [profileUser]);
 
 
   const handleTabChange = (index) => {
@@ -81,27 +91,29 @@ const ProfilePage = () => {
     localStorage.setItem('activeTab', index);
   };
 
-  if (loading) {
+  if (loading || !profileUser) {
     return (
       <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
         <Spinner size="xl" />
       </Box>
     );
   }
-
+  const isCurrentUser = currentUser && currentUser.id === profileUser._id;
   return (
     <Box maxW="900px" mx="auto" mt={10} p={5} borderWidth="1px" borderRadius="lg">
       <HStack spacing={5}>
       <Avatar
         size="xl"
-        src={currentUser?.profilePicture ? `http://localhost:5000${currentUser.profilePicture}` : '../assets/avatar.png'} 
+        src={currentUser?.profilePicture ? `http://localhost:5000${profileUser.profilePicture}` : '../assets/avatar.png'} 
         alt="Profile Picture"
       />
-        <Box>
-          <Heading size="md">{currentUser?.name}</Heading>
-          <Button mt={3} size="sm" colorScheme="blue">
-            <Link to='/me'>Edit Profile</Link>
-          </Button>
+         <Box>
+          <Heading size="md">{profileUser.name}</Heading>
+          {isCurrentUser && (
+            <Button mt={3} size="sm" colorScheme="blue">
+              <Link to='/me'>Edit Profile</Link>
+            </Button>
+          )}
         </Box>
       </HStack>
 

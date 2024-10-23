@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate , Link } from 'react-router-dom';
 import PostDetails from '../components/Posts/PostDetails';
 import CommentBox from '../components/comments/CommentBox';
 import EditPostModal from '../components/Posts/EditPostModal';
@@ -254,20 +254,24 @@ const PostPage = () => {
                   const isCommentAuthor = comment.author && currentUser === comment.author._id;
 
                   return (
+                    
                     <li key={comment._id} className="border-t border-gray-200 py-4 flex items-start">
-                      {comment.author?.profilePicture ? (
-                        <img
-                          src={`http://localhost:5000${comment.author.profilePicture}`}
-                          alt="Profile"
-                          className="w-10 h-10 rounded-full mr-4 object-cover"
-                        />
-                      ) : (
-                        <img
-                          src="https://img.freepik.com/free-vector/businessman-character-avatar-isolated_24877-60111.jpg?size=338&ext=jpg&ga=GA1.1.2008272138.1726531200&semt=ais_hybrid"
-                          alt="Default Avatar"
-                          className="w-10 h-10 rounded-full mr-4 object-cover"
-                        />
-                      )}
+                      <Link to={`/profile/${comment.author._id}`}>
+                        {comment.author?.profilePicture ? (
+                          <img
+                            src={`http://localhost:5000${comment.author.profilePicture}`}
+                            alt="Profile"
+                            className="w-10 h-10 rounded-full mr-4 object-cover"
+                          />
+                        ) : (
+                          <img
+                            src="https://img.freepik.com/free-vector/businessman-character-avatar-isolated_24877-60111.jpg?size=338&ext=jpg&ga=GA1.1.2008272138.1726531200&semt=ais_hybrid"
+                            alt="Default Avatar"
+                            className="w-10 h-10 rounded-full mr-4 object-cover"
+                          />
+                        )}
+                      </Link>
+
 
                       <div className="flex-1">
 
@@ -289,7 +293,10 @@ const PostPage = () => {
                           <>
                             <p className="text-gray-700">{comment.content}</p>
                             <span className="text-gray-500 text-sm">
-                              By {comment.author?.email || 'Unknown'} on {formattedCommentDate}
+                              By <Link to={`/profile/${comment.author._id}`}>
+                                {comment.author?.email || 'Unknown'}
+                              </Link>
+                               on {formattedCommentDate}
                             </span>
                           </>
                         )}

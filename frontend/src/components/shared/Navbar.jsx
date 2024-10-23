@@ -12,6 +12,7 @@ const Navbar = () => {
   const [profilePicture, setProfilePicture] = useState(null);
   const { searchTerm, setSearchTerm } = useContext(SearchContext);
   const [localSearchTerm, setLocalSearchTerm] = useState('');
+  const [userId, setUserId] = useState(null);
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -25,6 +26,7 @@ const Navbar = () => {
         const user = await getCurrentUser();
         if (user && user.isAuthenticated) {
           setProfilePicture(user.user.profilePicture); 
+          setUserId(user.user.id);
         }
       } catch (error) {
         console.error('Failed to fetch user:', error);
@@ -83,13 +85,15 @@ const Navbar = () => {
                 )}
             {dropdownOpen && (
               <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-50">
-                <Link
-                  to="/profile"
-                  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left"
-                  onClick={() => setDropdownOpen(false)}
-                >
-                  My Profile
-                </Link>
+                {userId && ( 
+                  <Link
+                    to={`/profile/${userId}`}  
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left"
+                    onClick={() => setDropdownOpen(false)}
+                  >
+                    My Profile
+                  </Link>
+                )}
                 <button
                   className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left"
                   onClick={handleLogout}
