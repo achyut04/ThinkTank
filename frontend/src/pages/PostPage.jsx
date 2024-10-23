@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import PostDetails from '../components/Posts/PostDetails';
 import CommentBox from '../components/comments/CommentBox';
 import EditPostModal from '../components/Posts/EditPostModal';
-import { getPostById, addComment, sparkPost, updatePost, deletePost, fetchFile } from '../services/postService';
+import { getPostById, addComment, sparkPost, updatePost, deletePost, fetchFile, removeSpark } from '../services/postService';
 import { getCurrentUser } from '../services/authService';
 import { updateComment, deleteComment } from '../services/commentService';
 
@@ -17,6 +17,7 @@ const PostPage = () => {
   const [editPostData, setEditPostData] = useState({ title: '', content: '' });
   const [editingCommentId, setEditingCommentId] = useState(null);
   const [editCommentContent, setEditCommentContent] = useState('');
+  const [isSparked, setIsSparked] = useState(false);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -80,11 +81,24 @@ const PostPage = () => {
   };
   
   const handleSpark = async () => {
-    const sparkedPost = await sparkPost(id);
-    if (sparkedPost) {
-      const updatedPost = await getPostById(id);
-      if (updatedPost) {
-        setPost(updatedPost);
+    if(!isSparked) {
+      const sparkedPost = await sparkPost(id);
+      if (sparkedPost) {
+        const updatedPost = await getPostById(id);
+        if (updatedPost) {
+          setIsSparked(true);
+          setPost(updatedPost);
+        }
+      }
+    }
+    else{
+      const removedSpark = await removeSpark(id);
+      if (removedSpark) {
+        const updatedPost = await getPostById(id);
+        if (updatedPost) {
+          setIsSparked(false);
+          setPost(updatedPost);
+        }
       }
     }
   };
@@ -136,8 +150,8 @@ const PostPage = () => {
     } catch (error) {
       console.error('Error in handleSaveEditedComment:', error); 
     }
-    setEditingCommentId(null); // Reset edit mode
-    setEditCommentContent(''); // Reset the content
+    setEditingCommentId(null);
+    setEditCommentContent(''); 
   };
 
   const handleDeleteComment = async (commentId) => {
@@ -183,7 +197,6 @@ const PostPage = () => {
             />
           )}
 
-          {/* Links and Files Section */}
           {post.links && post.links.length > 0 && (
             <div className="mt-6">
               <h3 className="text-2xl font-semibold mb-4">References</h3>
@@ -217,7 +230,6 @@ const PostPage = () => {
             </div>
           )}
 
-          {/* Comments Section */}
           <div className="mt-6">
             <h3 className="text-2xl font-semibold mb-4">Add a Comment</h3>
             <CommentBox onSubmit={handleCommentSubmit} />
@@ -258,7 +270,7 @@ const PostPage = () => {
                       )}
 
                       <div className="flex-1">
-                        {/* If editing, show the text box */}
+
                         {editingCommentId === comment._id ? (
                           <div>
                             <textarea

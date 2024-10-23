@@ -23,7 +23,6 @@ const PostDetails = ({ post, onSpark }) => {
   const bgColor = useColorModeValue('white', 'gray.800');
   const textColor = useColorModeValue('gray.700', 'gray.200');
 
-  // Correct profile picture logic
   const profilePictureUrl = author?.profilePicture 
     ? `http://localhost:5000${author.profilePicture}` 
     : 'https://img.freepik.com/free-vector/businessman-character-avatar-isolated_24877-60111.jpg?size=338&ext=jpg&ga=GA1.1.2008272138.1726531200&semt=ais_hybrid';

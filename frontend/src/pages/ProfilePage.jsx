@@ -94,7 +94,7 @@ const ProfilePage = () => {
       <HStack spacing={5}>
       <Avatar
         size="xl"
-        src={currentUser?.profilePicture ? `http://localhost:5000${currentUser.profilePicture}` : '../assets/avatar.png'} // Dynamically show real or dummy picture
+        src={currentUser?.profilePicture ? `http://localhost:5000${currentUser.profilePicture}` : '../assets/avatar.png'} 
         alt="Profile Picture"
       />
         <Box>

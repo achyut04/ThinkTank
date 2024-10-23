@@ -97,6 +97,19 @@ export const sparkPost = async (postId, token) => {
     return null;
   }
 };
+export const removeSpark = async (postId, token) => {
+  try {
+    const response = await axios.delete(`http://localhost:5000/api/posts/${postId}/spark`, {}, {
+      headers: {
+        Authorization: `Bearer ${token}`, 
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error sparking post:', error);
+    return null;
+  }
+};
 
 export const fetchFile = async (filename) => {
   try {

@@ -18,7 +18,6 @@ import {
 } from '@chakra-ui/react';
 
 const theme = extendTheme({
-  // Customize the Chakra UI theme if needed
 });
 
 const Register = () => {
